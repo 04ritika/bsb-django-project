@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <!-- Search Section -->
+        <div class="col-lg-8 col-md-10 col-12">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="card-title mb-0">Search Users</h2>
+                </div>
+                <div class="card-body">
+                    <!-- Search Form -->
+                    <form method="GET" action="{% url 'search_users' %}" class="mb-4">
+                        <div class="input-group">
+                            <input type="text" name="q" class="form-control" placeholder="Search by username or name..." value="{{ query }}">
+                            <button type="submit" class="btn btn-primary">Search</button>
+                        </div>
+                    </form>
+
+                    <!-- Search Results -->
+                    <div class="search-results">
+                        {% if users %}
+                            {% for user in users %}
+                                <div class="card mb-3 border-0 shadow-sm">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h5 class="card-title mb-1">{{ user.username }}</h5>
+                                                {% if user.get_full_name %}
+                                                    <p class="card-text text-muted mb-0">{{ user.get_full_name }}</p>
+                                                {% endif %}
+                                            </div>
+                                            <a href="{% url 'public_profile' user.username %}" class="btn btn-primary btn-sm">View Profile</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-center text-muted">No users found.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: #f9f9f9;
+    }
+
+    .card {
+        border-radius: 15px;
+        background-color: #fff;
+    }
+
+    .card-header {
+        border-radius: 15px 15px 0 0;
+        font-size: 1.25rem;
+        font-weight: 600;
+    }
+
+    .input-group {
+        width: 100%;
+    }
+
+    .form-control {
+        border-radius: 5px;
+        border: 1px solid #ced4da;
+        padding: 10px;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+        transform: scale(1.05);
+    }
+
+    .search-results .card {
+        border-radius: 10px;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .search-results .card-body {
+        padding: 15px;
+    }
+
+    .text-muted {
+        color: #6c757d !important;
+    }
+
+    .card-title {
+        font-size: 1.2rem;
+        font-weight: 500;
+    }
+
+    .btn-sm {
+        font-size: 0.85rem;
+        padding: 5px 10px;
+    }
+
+    .shadow-lg {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1) !important;
+    }
+</style>
+
+{% endblock %}

@@ -1,0 +1,73 @@
+<!-- templates/posts/create_post.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Create {{ post_type|title }} Post</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data" id="postForm">
+                        {% csrf_token %}
+                        
+                        {% if post_type == 'image' %}
+                            <div class="mb-3">
+                                <label class="form-label">Image</label>
+                                <input type="file" name="image" class="form-control" accept="image/*" required>
+                            </div>
+                        {% endif %}
+                        
+                        {% if post_type == 'blog' %}
+                            <div class="mb-3">
+                                <label class="form-label">Title</label>
+                                {{ form.title }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Content</label>
+                                {{ form.content }}
+                            </div>
+                        {% endif %}
+                        
+                        {% if post_type == 'poll' %}
+                            <div class="mb-3">
+                                <label class="form-label">Question</label>
+                                {{ form.question }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Option 1</label>
+                                {{ form.option1 }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Option 2</label>
+                                {{ form.option2 }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Option 3 (Optional)</label>
+                                {{ form.option3 }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Option 4 (Optional)</label>
+                                {{ form.option4 }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Duration (hours)</label>
+                                {{ form.duration_hours }}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Caption</label>
+                            <textarea name="caption" class="form-control" rows="3"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Create Post</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

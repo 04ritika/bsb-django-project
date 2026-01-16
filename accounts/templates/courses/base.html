@@ -1,0 +1,281 @@
+{% extends 'base.html' %}
+
+{% block extra_head %}
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+<script>
+    // Prevent Tailwind from affecting the main navigation
+    tailwind.config = {
+        important: true,
+        prefix: 'tw-', // This will prefix all Tailwind classes to avoid conflicts
+        corePlugins: {
+            preflight: false, // This prevents Tailwind from resetting existing styles
+        }
+    }
+</script>
+{% endblock %}
+
+{% block content %}
+
+<div class="tw-mt-[64px]"> <!-- Add margin-top to account for base header -->
+    <header class="base-header tw-bg-white tw-shadow-md tw-w-full tw-z-50 tw-top-0 " >
+        
+        <nav class="tw-container tw-mx-auto tw-px-4 tw-py-4">
+            <div class="tw-flex tw-items-center tw-justify-between">
+                <div class="tw-flex tw-items-center tw-space-x-8">
+                    <a href="/" class="tw-text-2xl tw-font-bold tw-text-blue-600">BSB Course Explore</a>
+                    
+                    <!-- Categories Dropdown -->
+                    <div class="tw-relative" x-data="{ open: false }">
+                        <button 
+                            @click="open = !open"
+                            @click.away="open = false"
+                            class="tw-flex tw-items-center tw-space-x-1 tw-text-gray-700 hover:tw-text-blue-600 tw-px-4 tw-py-2 tw-rounded-md hover:tw-bg-gray-50 tw-transition-colors"
+                        >
+                            <span>Categories</span>
+                            <svg class="tw-w-4 tw-h-4 tw-transition-transform" 
+                                 :class="{'tw-rotate-180': open}"
+                                 fill="none" 
+                                 stroke="currentColor" 
+                                 viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        
+                        <!-- Dropdown Menu -->
+                        <div 
+                            x-show="open"
+                            x-transition:enter="tw-transition tw-ease-out tw-duration-200"
+                            x-transition:enter-start="tw-opacity-0 tw-transform tw-scale-95"
+                            x-transition:enter-end="tw-opacity-100 tw-transform tw-scale-100"
+                            x-transition:leave="tw-transition tw-ease-in tw-duration-150"
+                            x-transition:leave-start="tw-opacity-100 tw-transform tw-scale-100"
+                            x-transition:leave-end="tw-opacity-0 tw-transform tw-scale-95"
+                            class="tw-absolute tw-left-0 tw-mt-2 tw-w-56 tw-bg-white tw-rounded-lg tw-shadow-lg tw-border tw-border-gray-100"
+                        >
+                            {% for category in categories %}
+                            <a href="#category-{{ category.slug }}" 
+                               @click="open = false"
+                               class="tw-block tw-px-4 tw-py-3 tw-text-gray-700 hover:tw-bg-blue-50 hover:tw-text-blue-600 tw-transition-colors first:tw-rounded-t-lg last:tw-rounded-b-lg">
+                                {{ category.name }}
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search Bar -->
+              
+            </div>
+        </nav>
+    </header>
+</div>
+
+<div class="tw-container tw-mx-auto tw-px-4 tw-py-16">
+
+    
+
+    <div class="tw-grid tw-grid-cols-1 lg:tw-grid-cols-2 tw-gap-12 tw-items-center">
+        <!-- Left Column -->
+       <!-- Left Column -->
+<div>
+    <!-- Existing Content -->
+    <div class="tw-mb-4">
+        <span class="tw-inline-flex tw-items-center tw-text-purple-600">
+            <svg class="tw-w-5 tw-h-5 tw-mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+            </svg>
+            <span>Discover Your Next Course</span>
+        </span>
+    </div>
+
+    <h1 class="tw-text-5xl tw-font-bold tw-text-gray-900 tw-mb-6">
+        Expand Your Knowledge<br>
+        with Expert-Led Courses
+    </h1>
+
+    <p class="tw-text-xl tw-text-gray-600 tw-mb-8">
+        Find the perfect course to advance your skills and achieve your goals
+    </p>
+
+    <!-- New Icons and Text Section -->
+    <div class="tw-space-y-4 tw-mb-8">
+        <div class="tw-flex tw-items-center">
+            <svg class="tw-w-6 tw-h-6 tw-text-green-500 tw-mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            <span class="tw-text-lg">Expert Instructors</span>
+        </div>
+        <div class="tw-flex tw-items-center">
+            <svg class="tw-w-6 tw-h-6 tw-text-green-500 tw-mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            <span class="tw-text-lg">Flexible Learning</span>
+        </div>
+        <div class="tw-flex tw-items-center">
+            <svg class="tw-w-6 tw-h-6 tw-text-green-500 tw-mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            <span class="tw-text-lg">Supportive Community</span>
+        </div>
+    </div>
+
+    <!-- Search Section -->
+    <div class="tw-mb-8">
+        <form method="get" class="tw-flex tw-gap-4">
+            
+            <button type="submit">
+                Explore
+            </button>
+        </form>
+    </div>
+
+    {% if search_query %}
+    <div class="tw-mb-4 tw-flex tw-items-center tw-gap-4">
+        <p class="tw-text-gray-600">Results for: "{{ search_query }}"</p>
+        <a href="{% url 'course_list' %}" class="tw-text-purple-600 hover:tw-text-purple-700">Clear search</a>
+    </div>
+    {% endif %}
+</div>
+
+        <!-- Right Column -->
+        <!-- Right Column -->
+<!-- Right Column -->
+<div class="tw-relative">
+    <!-- Existing Featured Image Section -->
+    <div class="tw-bg-orange-400 tw-rounded-2xl tw-overflow-hidden tw-shadow-xl">
+        <img 
+            src="http://www.banasthali.org/banasthali/wcms/en/home/lower-menu/faculties/automation/gallery/automation_7.jpg" 
+            alt="Featured Courses" 
+            class="tw-w-full tw-h-[400px] tw-object-cover"
+        >
+    </div>
+
+    <!-- Feature Cards Section -->
+    <div class="tw-absolute tw-top-0 tw-right-0 tw-bg-emerald-500 tw-text-white tw-p-4 tw-rounded-lg tw-w-48 tw-transform -tw-translate-y-1/4">
+        <div class="tw-flex tw-items-center tw-space-x-2 tw-mb-2">
+            <svg class="tw-w-6 tw-h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+            </svg>
+            <span class="tw-font-semibold">Expert Faculty</span>
+        </div>
+        <div class="tw-flex tw-items-center tw-space-x-2 tw-mb-2">
+            <svg class="tw-w-6 tw-h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+            </svg>
+            <span class="tw-font-semibold">Certified Courses</span>
+        </div>
+        <div class="tw-flex tw-items-center tw-space-x-2">
+            <svg class="tw-w-6 tw-h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+            </svg>
+            <span class="tw-font-semibold">Comprehensive Resources</span>
+        </div>
+    </div>
+
+    <!-- Students Counter Section -->
+    <div class="tw-absolute tw-bottom-0 tw-right-0 tw-bg-white tw-p-4 tw-rounded-lg tw-shadow-lg tw-transform tw-translate-y-1/4">
+        <div class="tw-flex tw-items-center tw-space-x-3">
+            <div class="tw-flex -tw-space-x-2">
+                <!-- You can add student avatars here if needed -->
+            </div>
+            <div>
+                <div class="tw-font-bold tw-text-xl">200+</div>
+                <div class="tw-text-sm tw-text-gray-600">Students Preparing with us</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    </div>
+</div>
+
+<!-- Course Categories -->
+<div class="tw-container tw-mx-auto tw-px-4 tw-py-12">
+    {% for category in categories %}
+        {% if category.filtered_courses %}
+        <div class="tw-mb-16" id="category-{{ category.name|slugify }}">
+            <h2 class="tw-text-3xl tw-font-bold tw-text-gray-900 tw-mb-6">{{ category.name }}</h2>
+            
+            <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 lg:tw-grid-cols-3 tw-gap-8">
+                {% for course in category.filtered_courses %}
+                <div class="tw-bg-white tw-rounded-xl tw-shadow-lg tw-overflow-hidden tw-transition tw-transform hover:tw-translate-y-1 hover:tw-shadow-xl">
+                    {% if course.header_image %}
+                    <img 
+                        src="{{ course.header_image.url }}" 
+                        alt="{{ course.title }}" 
+                        class="tw-w-full tw-h-48 tw-object-cover"
+                    >
+                    {% endif %}
+                    
+                    <div class="tw-p-6">
+                        <h3 class="tw-text-xl tw-font-bold tw-text-gray-900 tw-mb-2">{{ course.title }}</h3>
+                        <p class="tw-text-gray-600 tw-mb-4">{{ course.description|truncatewords:15 }}</p>
+                        
+                        <a href="{% url 'course_detail' course.pk %}">
+                            View Details
+                        </a>
+                        
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    {% empty %}
+        <div class="tw-text-center tw-py-12">
+            <h3 class="tw-text-2xl tw-text-gray-600">No courses available at the moment.</h3>
+        </div>
+    {% endfor %}
+</div>
+
+
+<style>
+    /* Updated button styling with the requested linear gradient */
+button[type="submit"] {
+    background: linear-gradient(90deg, #0d6efd, #9333ea);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    border: none;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+button[type="submit"]:hover {
+    background: linear-gradient(90deg, #0b5ed7, #7e22ce); /* Slightly darker on hover */
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+button[type="submit"]:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Styling for the View Details link/button */
+a[href*="course_detail"] {
+    display: inline-block;
+    background: linear-gradient(90deg, #0d6efd, #9333ea);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+a[href*="course_detail"]:hover {
+    background: linear-gradient(90deg, #0b5ed7, #7e22ce); /* Slightly darker on hover */
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+a[href*="course_detail"]:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+</style>
+{% endblock %}

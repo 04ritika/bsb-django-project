@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Questions for {{ club.name }}</h2>
+                <a href="{% url 'club_profile' club.slug %}" class="btn btn-outline-secondary">Back to Club</a>
+            </div>
+            
+            <!-- Ask a question form -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Ask a Question</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        {% for field in form %}
+                            <div class="mb-3">
+                                {{ field.label_tag }}
+                                {{ field }}
+                                {% if field.help_text %}
+                                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                                {% endif %}
+                                {% for error in field.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                        <button type="submit" class="btn btn-primary">Submit Question</button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Questions and Answers -->
+            <h3 class="mb-3">Questions</h3>
+            {% if questions %}
+                <div class="accordion" id="accordionQuestions">
+                    {% for question in questions %}
+                        <div class="accordion-item mb-3 border">
+                            <h2 class="accordion-header" id="heading{{ question.id }}">
+                                <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button" 
+                                        data-bs-toggle="collapse" data-bs-target="#collapse{{ question.id }}" 
+                                        aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}" 
+                                        aria-controls="collapse{{ question.id }}">
+                                    <div class="d-flex w-100 justify-content-between align-items-center">
+                                        <div>
+                                            <strong>{{ question.question|truncatechars:100 }}</strong>
+                                            {% if not question.is_public %}
+                                                <span class="badge bg-secondary ms-2">Private</span>
+                                            {% endif %}
+                                        </div>
+                                        <small class="text-muted ms-3">
+                                            {{ question.created_at|date:"M d, Y" }}
+                                        </small>
+                                    </div>
+                                </button>
+                            </h2>
+                            <div id="collapse{{ question.id }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" 
+                                 aria-labelledby="heading{{ question.id }}" data-bs-parent="#accordionQuestions">
+                                <div class="accordion-body">
+                                    <div class="mb-3">
+                                        <p class="mb-1"><strong>Asked by:</strong> {{ question.asked_by.username }}</p>
+                                        <p class="mb-3">{{ question.question }}</p>
+                                        
+                                        {% if question.is_answered %}
+                                            <div class="card">
+                                                <div class="card-header bg-success text-white">
+                                                    <strong>Answer</strong> from {{ question.answer.answered_by.username }}
+                                                    <small class="ms-2">{{ question.answer.created_at|date:"M d, Y" }}</small>
+                                                </div>
+                                                <div class="card-body">
+                                                    {{ question.answer.answer|linebreaks }}
+                                                </div>
+                                            </div>
+                                        {% else %}
+                                            <div class="alert alert-warning">
+                                                <i class="bi bi-clock"></i> This question hasn't been answered yet.
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="d-flex">
+                                        {% if request.user == club.created_by or is_core_team %}
+                                            <a href="{% url 'answer_question' club.slug question.id %}" class="btn btn-primary btn-sm me-2">
+                                                {% if question.is_answered %}Edit Answer{% else %}Answer{% endif %}
+                                            </a>
+                                        {% endif %}
+                                        
+                                        {% if request.user == question.asked_by or request.user == club.created_by %}
+                                            <form method="post" action="{% url 'delete_question' club.slug question.id %}" 
+                                                  onsubmit="return confirm('Are you sure you want to delete this question?');">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    No questions have been asked yet. Be the first to ask!
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,71 @@
+<!-- club/team_detail.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between">
+                    <h4>{{ team.name }}</h4>
+                    <a href="{% url 'club_profile' club.slug %}" class="btn btn-outline-secondary">Back to Club</a>
+                </div>
+                <div class="card-body">
+                    {% if team.description %}
+                        <p>{{ team.description }}</p>
+                    {% endif %}
+                    
+                    <h5 class="mt-4">Team Members</h5>
+                    {% if team_members %}
+                        <ul class="list-group mb-4">
+                            {% for member in team_members %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>{{ member.club_member.user.username }}</strong>
+                                        {% if member.team_role %}
+                                            - {{ member.team_role }}
+                                        {% endif %}
+                                    </div>
+                                    <span class="badge bg-secondary">{{ member.club_member.role }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted">No members in this team yet.</p>
+                    {% endif %}
+                    
+                    {% if request.user == club.created_by %}
+                        <div class="card mt-4">
+                            <div class="card-header">Add Team Member</div>
+                            <div class="card-body">
+                                {% if available_members %}
+                                    <form method="POST" action="{% url 'add_team_member' club.slug team.id %}">
+                                        {% csrf_token %}
+                                        <div class="mb-3">
+                                            <label for="member_id" class="form-label">Select Member</label>
+                                            <select name="member_id" id="member_id" class="form-select" required>
+                                                <option value="">-- Select a member --</option>
+                                                {% for member in available_members %}
+                                                    <option value="{{ member.id }}">{{ member.user.username }} ({{ member.role }})</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="team_role" class="form-label">Team Role (optional)</label>
+                                            <input type="text" name="team_role" id="team_role" class="form-control" 
+                                                   placeholder="e.g., Developer, Designer, etc.">
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Add to Team</button>
+                                    </form>
+                                {% else %}
+                                    <p class="text-muted">All club members are already part of this team.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

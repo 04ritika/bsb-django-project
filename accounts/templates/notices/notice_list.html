@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_head %}
+<style>
+    .hero-section {
+        background: url("{% static 'images/BSB_image2.jpg' %}") no-repeat center center;
+        background-size: cover;
+        text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
+        color: white;
+    padding: 80px 0;
+    }
+
+    @keyframes gradient {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    .notice-card {
+        border-left: 4px solid #198754;
+        transition: all 0.3s ease;
+    }
+
+    .notice-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .category-header {
+        background: linear-gradient(90deg, #0d6efd, #6610f2);
+        color: white;
+    }
+
+    .headline-section {
+        background-color: white;
+        padding: 60px 0;
+    }
+
+    .notices-section {
+        background-color: #f8f9fa;
+        padding: 60px 0;
+    }
+
+    .blue-text {
+        color: #0d6efd;
+    }
+
+    .purple-text {
+        color: #6610f2;
+    }
+
+    .green-text {
+        color: #198754;
+    }
+    
+    /* New styles for scrollable notices */
+    .notices-container {
+        max-height: 400px;
+        overflow-y: auto;
+        padding-right: 5px;
+    }
+    
+    /* Custom scrollbar styles */
+    .notices-container::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    .notices-container::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    
+    .notices-container::-webkit-scrollbar-thumb {
+        background: #6610f2;
+        border-radius: 10px;
+    }
+    
+    .notices-container::-webkit-scrollbar-thumb:hover {
+        background: #0d6efd;
+    }
+    
+    /* Scroll indicator */
+    .scroll-indicator {
+        text-align: center;
+        padding: 8px 0;
+        color: #6610f2;
+        font-size: 14px;
+        display: none;
+    }
+    
+    .has-more-notices .scroll-indicator {
+        display: block;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="container text-center">
+        <h1 class="display-3 fw-bold mb-3">Notice Board</h1>
+        <p class="fs-4">Stay Updated with Latest Announcements</p>
+    </div>
+</div>
+
+<!-- Headline Section -->
+<div class="headline-section">
+    <div class="container text-center">
+        <h2 class="display-5 fw-bold blue-text mb-3">Important Announcements</h2>
+        <p class="fs-4 purple-text mb-3">Keep Track of All Important Updates and News</p>
+        <p class="text-muted mx-auto" style="max-width: 700px;">
+            Access all official notices, announcements, and updates in one centralized location. 
+            Stay informed about academic events, deadlines, and important information.
+        </p>
+    </div>
+</div>
+
+<!-- Notices Section -->
+<div class="notices-section">
+    <div class="container">
+        {% for board, notices in notices_by_board.items %}
+        <div class="card mb-4 shadow">
+            <!-- Category Header -->
+            <div class="category-header p-4 d-flex justify-content-between align-items-center">
+                <h3 class="fs-3 fw-bold mb-0">{{ board.name }}</h3>
+                <span class="badge bg-white text-primary">{{ notices|length }} notices</span>
+            </div>
+            
+            <!-- Notices -->
+            <div class="card-body">
+                {% if notices %}
+                    <div class="notices-container {% if notices|length > 3 %}has-more-notices{% endif %}">
+                        {% for notice in notices %}
+                        <div class="notice-card bg-white p-4 mb-4 rounded shadow-sm">
+                            <h4 class="fs-4 blue-text fw-bold">{{ notice.title }}</h4>
+                            <div class="text-muted mb-3">
+                                {{ notice.content|linebreaks }}
+                            </div>
+                            <div class="text-purple-600 small">
+                                <i class="bi bi-calendar3"></i>
+                                {{ notice.created_at|date:"F d, Y" }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="scroll-indicator">
+                        <i class="bi bi-arrow-down-circle"></i> Scroll for more notices
+                    </div>
+                {% else %}
+                    <p class="text-muted text-center py-4">No notices available in this category.</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add scroll indicator logic
+        const noticeContainers = document.querySelectorAll('.notices-container');
+        
+        noticeContainers.forEach(container => {
+            // Check if scrolling is needed
+            function updateScrollIndicator() {
+                const hasMoreContent = container.scrollHeight > container.clientHeight;
+                const isFullyScrolled = container.scrollTop + container.clientHeight >= container.scrollHeight - 10;
+                
+                const indicator = container.parentNode.querySelector('.scroll-indicator');
+                
+                if (hasMoreContent && !isFullyScrolled) {
+                    container.classList.add('has-more-notices');
+                } else {
+                    container.classList.remove('has-more-notices');
+                }
+            }
+            
+            // Initial check
+            updateScrollIndicator();
+            
+            // Check on scroll
+            container.addEventListener('scroll', updateScrollIndicator);
+            
+            // Check on window resize
+            window.addEventListener('resize', updateScrollIndicator);
+        });
+    });
+</script>
+{% endblock %}

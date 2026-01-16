@@ -1,0 +1,11 @@
+
+<!-- templates/posts/comment.html -->
+<div class="comment mb-2">
+    <div class="d-flex">
+        <a href="{% url 'public_profile' comment.user.username %}" class="text-decoration-none me-2">
+            <strong>{{ comment.user.username }}</strong>
+        </a>
+        <p class="mb-0">{{ comment.content }}</p>
+    </div>
+    <small class="text-muted">{{ comment.created_at|timesince }} ago</small>
+</div>

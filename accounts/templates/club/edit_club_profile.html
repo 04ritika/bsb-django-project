@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="text-center mb-0">Edit Club Profile</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <div class="d-flex justify-content-end mt-4">
+                            <button type="submit" class="btn btn-primary">Update Club</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<style>
+    body {
+        background-color: #f8f9fa; /* Light background for a clean look */
+        font-family: 'Roboto', sans-serif; /* Modern font style */
+    }
+    
+    .card {
+        border-radius: 12px; /* Rounded corners for a polished look */
+        overflow: hidden; /* Clip child elements to border radius */
+    }
+    
+    .card-header {
+        font-weight: 500;
+        padding: 1.5rem;
+    }
+    
+    .card-body {
+        padding: 2rem;
+    }
+    
+    form {
+        margin: 0;
+    }
+    
+    button.btn {
+        padding: 0.6rem 1.5rem;
+        font-size: 1rem;
+        font-weight: bold;
+        border-radius: 8px;
+    }
+    
+    h3 {
+        font-size: 1.8rem;
+    }
+    
+</style>    
+{% endblock %}

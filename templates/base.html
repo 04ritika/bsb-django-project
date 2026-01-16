@@ -1,0 +1,585 @@
+{% load static %} 
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Authentication System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="{% static 'css/main.css' %}" rel="stylesheet">
+    <link href="{% static 'css/posts.css' %}" rel="stylesheet">
+    {% block extra_head %}
+    {% endblock %}
+    <style>
+        /* Header Styles */
+        /* Modernized Navbar Styles */
+        /* Modernized Navbar Styles with Fixed Visibility */
+        .navbar {
+            background: linear-gradient(to right, #ffffff, #f8f9fa);
+            border-bottom: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 15px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            color: #3a86ff !important;
+            font-size: 1.5rem;
+            letter-spacing: -0.5px;
+            position: relative;
+            transition: transform 0.3s ease;
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .navbar-brand:hover {
+            transform: translateY(-2px);
+            color: #2667ff;
+        }
+        
+        .navbar-brand::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: linear-gradient(to right, #3a86ff, #8338ec);
+            transition: width 0.3s ease;
+            border-radius: 3px;
+        }
+        
+        .navbar-brand:hover::after {
+            width: 100%;
+        }
+        
+        /* Fix for visibility of all nav items */
+        .navbar-nav {
+            width: 100%;
+            display: flex;
+            align-items: center;
+        }
+        
+        .navbar-nav .nav-item {
+            margin: 0 5px;
+            position: relative;
+        }
+        
+        /* Ensure all nav links have the same base styling */
+        .navbar-nav .nav-link {
+            color: #495057;
+            font-weight: 500;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            display: block; /* Ensure it's a block element */
+            text-decoration: none;
+            white-space: nowrap; /* Prevent text wrapping */
+        }
+        
+        /* Override the text color that might be making text invisible */
+        .navbar-dark .navbar-nav .nav-link {
+            color: #495057 !important; /* Override Bootstrap's navbar-dark class */
+        }
+        
+        .navbar-nav .nav-link:hover {
+            color: #3a86ff !important;
+            background-color: rgba(58, 134, 255, 0.08);
+            transform: translateY(-2px);
+        }
+        
+        /* Make sure all options use the same styling basis */
+        .navbar-nav .nav-item .nav-link,
+        .dropdown-toggle,
+        #userDropdown,
+        .nav-link[href*="login"],
+        .nav-link[href*="register"] {
+            color: #495057;
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        /* Active nav link */
+        .navbar-nav .nav-link.active {
+            background-color: rgba(58, 134, 255, 0.12);
+            color: #3a86ff;
+            font-weight: 600;
+        }
+        
+        /* Dropdown styling */
+        .navbar-nav .dropdown-menu {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            margin-top: 10px;
+            padding: 12px 0;
+            animation: dropdown-fade 0.3s ease-out;
+            display: none; /* Hide by default */
+        }
+        
+        .navbar-nav .dropdown-menu.show {
+            display: block; /* Show when active */
+        }
+        
+        .navbar-nav .dropdown-item {
+            font-size: 0.9rem;
+            padding: 10px 20px;
+            color: #495057;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: block;
+            width: 100%;
+            text-align: left;
+        }
+        
+        .navbar-nav .dropdown-item:hover {
+            background-color: rgba(58, 134, 255, 0.08);
+            color: #3a86ff;
+            transform: translateX(5px);
+        }
+        
+        .navbar-nav .dropdown-divider {
+            margin: 8px 0;
+            opacity: 0.1;
+        }
+        
+        /* Fix background override that might be causing visibility issues */
+        .navbar-dark {
+            background: linear-gradient(to right, #ffffff, #f8f9fa) !important;
+        }
+        
+        .bg-primary {
+            background: linear-gradient(to right, #ffffff, #f8f9fa) !important;
+        }
+        
+        /* Fix the right side nav items */
+        .navbar-nav:last-child {
+            margin-left: auto;
+            justify-content: flex-end;
+        }
+        
+        /* Toggler button styling */
+        .navbar-toggler {
+            border: none;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            background-color: transparent;
+        }
+        
+        .navbar-toggler:focus {
+            box-shadow: none;
+            outline: none;
+        }
+        
+        .navbar-toggler-icon {
+            background-image: none !important; /* Override Bootstrap's icon */
+            position: relative;
+            width: 24px;
+            height: 2px;
+            background-color: #3a86ff;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+        
+        .navbar-toggler-icon::before,
+        .navbar-toggler-icon::after {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 2px;
+            background-color: #3a86ff;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+        
+        .navbar-toggler-icon::before {
+            transform: translateY(-8px);
+        }
+        
+        .navbar-toggler-icon::after {
+            transform: translateY(8px);
+        }
+        
+        .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon {
+            background-color: transparent;
+        }
+        
+        .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon::before {
+            transform: rotate(45deg);
+        }
+        
+        .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon::after {
+            transform: rotate(-45deg);
+        }
+        
+        /* Login/Register buttons */
+        .navbar-nav .nav-item:nth-last-child(2) .nav-link,
+        .navbar-nav .nav-item:last-child .nav-link {
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+            padding: 8px 16px;
+        }
+        
+        .navbar-nav .nav-item:nth-last-child(2) .nav-link {
+            color: #3a86ff;
+        }
+        
+        .navbar-nav .nav-item:last-child .nav-link {
+            background: linear-gradient(135deg, #3a86ff, #8338ec);
+            color: white !important; /* Ensure visibility */
+            border-radius: 6px;
+            box-shadow: 0 4px 10px rgba(58, 134, 255, 0.3);
+        }
+        
+        .navbar-nav .nav-item:nth-last-child(2) .nav-link:hover {
+            border-color: #3a86ff;
+            background-color: rgba(58, 134, 255, 0.05);
+        }
+        
+        .navbar-nav .nav-item:last-child .nav-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(58, 134, 255, 0.4);
+        }
+        
+        /* Animations */
+        @keyframes dropdown-fade {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* User profile dropdown customization */
+        #userDropdown::after {
+            content: '';
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%233a86ff' d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: center;
+            margin-left: 5px;
+            transition: transform 0.3s ease;
+        }
+        
+        #userDropdown[aria-expanded="true"]::after {
+            transform: rotate(180deg);
+        }
+        
+        /* Mobile menu styling */
+        @media (max-width: 991.98px) {
+            .navbar-collapse {
+                background: white;
+                border-radius: 12px;
+                margin-top: 15px;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+                padding: 15px;
+                max-height: 80vh;
+                overflow-y: auto;
+            }
+            
+            .navbar-nav .nav-item {
+                margin: 5px 0;
+            }
+            
+            .navbar-nav .nav-link {
+                padding: 12px 20px;
+            }
+            
+            .navbar-nav .dropdown-menu {
+                box-shadow: none;
+                padding: 0 0 0 15px;
+                margin-top: 0;
+                background: transparent;
+            }
+            
+            .navbar-nav .dropdown-item {
+                padding: 8px 15px;
+            }
+            
+            .navbar-nav:last-child {
+                margin-top: 15px;
+                border-top: 1px solid rgba(0,0,0,0.05);
+                padding-top: 15px;
+            }
+        }
+        
+        /* Change navbar appearance on scroll */
+        .navbar.scrolled {
+            padding: 10px 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        .hero {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+            padding: 60px 20px;
+            background: url("https://www.admissionfever.com/Media/clgimg/gallery/3486_img6770908278886776.jpg") no-repeat center center / cover;
+            color: #333;
+        }
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .hero p {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+        .search-bar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .search-bar input {
+            width: 300px;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px 0 0 5px;
+        }
+        .search-bar button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 0 5px 5px 0;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .search-bar button:hover {
+            background-color: #0056b3;
+        }
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 30px;
+        }
+        .stats div {
+            text-align: center;
+            font-weight: bold;
+        }
+        .stats div span {
+            display: block;
+            font-size: 1.5rem;
+            color: #007bff;
+        }
+
+        /* Chatbot styles */
+        #chatbot-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        #toggle-chatbot {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            width: 60px;
+            height: 60px;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        #toggle-chatbot img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            
+        }
+        
+        #toggle-chatbot:hover {
+            transform: scale(1.05);
+        }
+        .banasthali-logo {
+            height: 40px;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <img src="{% static 'images/bsblogo-removebg-preview.png' %}" alt="Logo" class="banasthali-logo">
+            <a class="navbar-brand" href="{% url 'home' %}">BSBridge</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                  
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'blogs' %}">Blogs</a>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'course_list' %}">Courses</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'notice_list' %}">Notice</a>
+                        </li>
+                           
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'search_users' %}">Search Users</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="createPostDropdown" role="button" data-bs-toggle="dropdown">
+                                Create Post
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'create_post' 'image' %}">Image Post</a></li>
+                                <li><a class="dropdown-item" href="{% url 'create_post' 'blog' %}">Blog Post</a></li>
+                                <li><a class="dropdown-item" href="{% url 'create_post' 'poll' %}">Poll</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="clubsDropdown" role="button" data-bs-toggle="dropdown">
+                                Clubs
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'my_clubs' %}">My Clubs</a></li>
+                                <li><a class="dropdown-item" href="{% url 'all_clubs' %}">Browse Clubs</a></li>
+                                {% if not request.user.student_profile and not request.user.club_profile %}
+                                <a href="{% url 'create_club' %}" class="btn btn-primary">Create Club</a>
+                            {% endif %}
+                            </ul>
+                        </li>
+                    {% endif %}
+                </ul>
+
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                {{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                            </ul>
+                        </li>
+                    {% endif %}
+                    <li class="nav-item {% if user.is_authenticated %}d-none d-lg-block{% endif %}">
+                        <a class="nav-link" href="{% url 'login' %}">Login</a>
+                    </li>
+                    <li class="nav-item {% if user.is_authenticated %}d-none d-lg-block{% endif %}">
+                        <a class="nav-link" href="{% url 'register' %}">Register</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    
+    <!--<div class="hero" >
+        <h1>aims at the synthesis of spiritual values and scientific achievements of both the East and the West.</h1>
+        <p>Its educational programme is based on the concept of<strong>"Panchmukhi Shiksha"</strong> and aims at all round harmonious development of personality</p>
+        
+        <div class="stats">
+            <div>
+                <span></span>
+                Get connected
+            </div>
+            <div>
+                <span></span>
+                 Be Updated
+            </div>
+            <div>
+                <span></span>
+                Share your thougths
+            </div>
+        </div>
+    </div>-->
+    {% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+    <div class="container mt-4">
+       
+        {% endif %}
+        {% block content %}
+        {% endblock %}
+        
+    </div>
+ <!-- Chatbot iframe and toggle button -->
+ <div id="chatbot-container" style="display: none;">
+    <!-- Chatbot iframe will be inserted here -->
+</div>
+
+<!-- Assuming you have a button with id="toggle-chatbot" -->
+<button id="toggle-chatbot">
+    <img src="/static/images/pixelcut-export.png" alt="Chat with us">
+</button>
+<script>
+    const chatbotContainer = document.getElementById('chatbot-container');
+    const toggleChatbot = document.getElementById('toggle-chatbot');
+
+    toggleChatbot.addEventListener('click', () => {
+        if (chatbotContainer.style.display === 'none') {
+            chatbotContainer.style.display = 'block';
+            const iframe = document.createElement('iframe');
+            iframe.src = "https://cdn.botpress.cloud/webchat/v2.2/shareable.html?configUrl=https://files.bpcontent.cloud/2025/01/18/13/20250118133323-GGK0GX5Q.json";
+            iframe.style.width = '350px';
+            iframe.style.height = '500px';
+            iframe.style.border = 'none';
+            iframe.style.borderRadius = '10px';
+            iframe.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
+            chatbotContainer.appendChild(iframe);
+        } else {
+            chatbotContainer.style.display = 'none';
+            chatbotContainer.innerHTML = '';  // Remove the iframe
+        }
+    });
+</script>
+<script>
+    // Add this to your existing JavaScript
+window.addEventListener('scroll', function() {
+    const navbar = document.querySelector('.navbar');
+    if (window.scrollY > 50) {
+        navbar.classList.add('scrolled');
+    } else {
+        navbar.classList.remove('scrolled');
+    }
+});
+</script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/posts.js' %}"></script>
+
+    
+</body>
+</html>

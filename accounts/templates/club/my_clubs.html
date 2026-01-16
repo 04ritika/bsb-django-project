@@ -1,0 +1,716 @@
+<!-- templates/club/my_clubs.html -->
+{% extends 'base.html' %}
+{%load static%}
+{% block content %}
+<div class="custom-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <!-- Text Section -->
+            <div class="col-md-6">
+                <h1 class="header-title">
+                    Manage Your <span class="highlight">Clubs</span><br>
+                    Easily and Efficiently
+                </h1>
+                <p class="header-subtitle">
+                    Manage and create clubs that match your interests. Start or join a club today and meet like-minded people!
+                </p>
+                <a href="{% url 'create_club' %}" class="btn btn-primary explore-btn">Create New Club</a>
+            </div>
+
+            <!-- Images Section -->
+            <div class="col-md-6">
+                <div class="header-images">
+                    <div class="image-grid">
+                        <div class="small-image image-top-left">
+                            <img src="{% static 'images/clubimage6.jpg' %}" alt="Small 1">
+                        </div>
+                        
+                        <div class="main-image">
+                            <img src="{% static 'images/clubimage3.jpg' %}" alt="Main">
+                        </div>
+                        
+                        <div class="small-image image-bottom-right">
+                            <img src="{% static 'images/clubimage5.jpg' %}" alt="Small 4">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="section-card">
+                <div class="section-card-header">
+                    <h3>My Clubs</h3>
+                </div>
+                <div class="section-card-body">
+                    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+                        {% for club in clubs %}
+                            <div class="col">
+                                <div class="club-card">
+                                    {% if club.club_logo %}
+                                        <div class="club-img-container">
+                                            <img src="{{ club.club_logo.url }}" class="club-img-top" alt="{{ club.name }}">
+                                        </div>
+                                    {% endif %}
+                                    <div class="club-card-body">
+                                        <div class="club-category">
+                                            <span class="category-tag tag-club">Community</span>
+                                        </div>
+                                        <h5 class="club-card-title">{{ club.name }}</h5>
+                                        <div class="club-card-content">
+                                            <p class="club-card-text">{{ club.description|truncatechars:100 }}</p>
+                                        </div>
+                                        <div class="author-info">
+                                            <div class="author-avatar">
+                                                <!-- If you have user avatars, add them here -->
+                                                <div class="avatar-placeholder">{{ club.created_by.username|first }}</div>
+                                            </div>
+                                            <div class="author-details">
+                                                <p class="author-name">{{ club.created_by.username }}</p>
+                                                <p class="author-role">Club Creator</p>
+                                            </div>
+                                        </div>
+                                        <div class="button-container">
+                                            <a href="{% url 'club_profile' club.slug %}" class="btn btn-primary view-btn">View Club</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="col-12">
+                                <div class="empty-state">
+                                    <div class="empty-icon">📚</div>
+                                    <h4 class="empty-title">No Clubs Yet</h4>
+                                    <p class="empty-message">You haven't created any clubs yet. Start by creating your first club!</p>
+                                    <a href="{% url 'create_club' %}" class="btn btn-primary create-btn">Create Your First Club</a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Main Header Section */
+    .custom-header {
+        margin-top: 3rem;
+        padding: 3rem 2rem;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 20px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.05);
+    }
+    
+    .custom-header::before {
+        content: '';
+        position: absolute;
+        top: -50px;
+        right: -50px;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle, rgba(13, 110, 253, 0.1) 0%, rgba(13, 110, 253, 0) 70%);
+        border-radius: 50%;
+        z-index: 0;
+    }
+    
+    .custom-header::after {
+        content: '';
+        position: absolute;
+        bottom: -50px;
+        left: -50px;
+        width: 250px;
+        height: 250px;
+        background: radial-gradient(circle, rgba(102, 16, 242, 0.08) 0%, rgba(102, 16, 242, 0) 70%);
+        border-radius: 50%;
+        z-index: 0;
+    }
+    
+    .header-title {
+        font-size: 3.2rem;
+        font-weight: 800;
+        color: #222;
+        letter-spacing: -0.03em;
+        line-height: 1.1;
+        position: relative;
+        z-index: 1;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        animation: fadeInUp 0.8s ease-out;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .highlight {
+        color: #0d6efd;
+        position: relative;
+        display: inline-block;
+    }
+    
+    .highlight::after {
+        content: '';
+        position: absolute;
+        bottom: 6px;
+        left: 0;
+        width: 100%;
+        height: 8px;
+        background-color: rgba(13, 110, 253, 0.15);
+        border-radius: 4px;
+        z-index: -1;
+        transform: scaleX(0.9);
+        transform-origin: left;
+        animation: expandWidth 0.5s 0.8s forwards ease-out;
+    }
+    
+    @keyframes expandWidth {
+        from {
+            transform: scaleX(0);
+        }
+        to {
+            transform: scaleX(1);
+        }
+    }
+    
+    .header-subtitle {
+        margin-top: 1.5rem;
+        color: #555;
+        font-size: 1.15rem;
+        line-height: 1.7;
+        font-weight: 400;
+        max-width: 80%;
+        position: relative;
+        z-index: 1;
+        animation: fadeIn 0.8s 0.4s forwards;
+        opacity: 0;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+    
+    .explore-btn {
+        margin-top: 2.25rem;
+        padding: 0.85rem 2.2rem;
+        font-size: 1.05rem;
+        background: linear-gradient(90deg, #0d6efd, #6610f2);
+        color: #fff;
+        border: none;
+        border-radius: 30px;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        box-shadow: 0 8px 20px rgba(13, 110, 253, 0.3);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s ease;
+        z-index: 1;
+        animation: fadeIn 0.8s 0.6s forwards;
+        opacity: 0;
+    }
+    
+    .explore-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, #6610f2, #0d6efd);
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        z-index: -1;
+    }
+    
+    .explore-btn:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(13, 110, 253, 0.4);
+    }
+    
+    .explore-btn:hover::before {
+        opacity: 1;
+    }
+    
+    .explore-btn::after {
+        content: '→';
+        position: absolute;
+        right: 25px;
+        opacity: 0;
+        transform: translateX(-10px);
+        transition: all 0.3s ease;
+    }
+    
+    .explore-btn:hover::after {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    
+    .header-images {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        margin-top: 2.5rem;
+        z-index: 1;
+        animation: fadeIn 1s 0.8s forwards;
+        opacity: 0;
+    }
+    
+    .image-grid {
+        display: grid;
+        grid-template-areas:
+            "top-left top-right"
+            "main main"
+            "bottom-left bottom-right";
+        gap: 1.25rem;
+        transform: perspective(1000px) rotateY(-5deg) rotateX(2deg);
+        transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+    
+    .image-grid:hover {
+        transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
+    }
+    
+    .small-image {
+        width: 185px;
+        height: 110px;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+        transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+        position: relative;
+    }
+    
+    .small-image::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to bottom, rgba(0,0,0,0) 70%, rgba(0,0,0,0.2) 100%);
+        opacity: 0.6;
+        transition: opacity 0.3s ease;
+    }
+    
+    .small-image:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 35px rgba(0, 0, 0, 0.15);
+    }
+    
+    .small-image:hover::after {
+        opacity: 0;
+    }
+    
+    .main-image {
+        grid-area: main;
+        width: 420px;
+        height: 260px;
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+        position: relative;
+        border: 5px solid white;
+    }
+    
+    .main-image::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to bottom, rgba(0,0,0,0) 70%, rgba(0,0,0,0.15) 100%);
+        opacity: 0.7;
+        transition: opacity 0.3s ease;
+    }
+    
+    .main-image:hover {
+        transform: translateY(-15px) scale(1.02);
+        box-shadow: 0 25px 45px rgba(0, 0, 0, 0.2);
+    }
+    
+    .main-image:hover::after {
+        opacity: 0;
+    }
+    
+    .image-top-left {
+        grid-area: top-left;
+        animation: floatAnimation 6s infinite ease-in-out;
+    }
+    
+    .image-top-right {
+        grid-area: top-right;
+        animation: floatAnimation 8s infinite ease-in-out;
+        animation-delay: 1s;
+    }
+    
+    .image-bottom-left {
+        grid-area: bottom-left;
+        animation: floatAnimation 7s infinite ease-in-out;
+        animation-delay: 2s;
+    }
+    
+    .image-bottom-right {
+        grid-area: bottom-right;
+        animation: floatAnimation 5s infinite ease-in-out;
+        animation-delay: 0.5s;
+    }
+    
+    @keyframes floatAnimation {
+        0% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+        100% {
+            transform: translateY(0);
+        }
+    }
+    
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.7s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+    
+    .small-image:hover img,
+    .main-image:hover img {
+        transform: scale(1.1);
+    }
+    
+    /* Section Card Styling */
+    .section-card {
+        border: none;
+        border-radius: 25px;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.06);
+        overflow: hidden;
+        background-color: #fff;
+        margin-bottom: 35px;
+    }
+    
+    .section-card-header {
+        background: linear-gradient(90deg, #0d6efd, #6610f2);
+        color: #fff;
+        padding: 1.5rem 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .section-card-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 150px;
+        height: 150px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 70%);
+        border-radius: 50%;
+    }
+    
+    .section-card-header h3 {
+        font-size: 1.8rem;
+        font-weight: 800;
+        margin: 0;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        position: relative;
+    }
+    
+    .section-card-body {
+        padding: 2rem;
+    }
+    
+    /* Club Card Styling */
+    .club-card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        transition: transform 0.4s ease, box-shadow 0.4s ease;
+        margin-bottom: 30px;
+        background-color: #fff;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .club-card:hover {
+        transform: translateY(-15px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+    
+    .club-card::before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, #0d6efd, #6610f2);
+        transform: scaleX(0);
+        transform-origin: right;
+        transition: transform 0.4s ease;
+        z-index: 2;
+    }
+    
+    .club-card:hover::before {
+        transform: scaleX(1);
+        transform-origin: left;
+    }
+    
+    .club-img-container {
+        height: 200px;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .club-img-container::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to bottom, rgba(0,0,0,0) 70%, rgba(0,0,0,0.2) 100%);
+        pointer-events: none;
+    }
+    
+    .club-img-top {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .club-card:hover .club-img-top {
+        transform: scale(1.05);
+    }
+    
+    .club-card-body {
+        padding: 1.75rem;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+    
+    .club-category {
+        margin-bottom: 1rem;
+    }
+    
+    .category-tag {
+        display: inline-block;
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+    }
+    
+    .tag-club {
+        background: linear-gradient(90deg, #e6f7ff, #d0e8ff);
+        color: #0077cc;
+    }
+    
+    .club-card-title {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: #222;
+        margin-bottom: 1rem;
+        letter-spacing: -0.02em;
+    }
+    
+    .club-card-content {
+        flex-grow: 1;
+    }
+    
+    .club-card-text {
+        font-size: 1rem;
+        color: #555;
+        line-height: 1.7;
+        margin-bottom: 1.25rem;
+    }
+    
+    /* Author info */
+    .author-info {
+        display: flex;
+        align-items: center;
+        margin-top: 1.25rem;
+        padding-top: 1.25rem;
+        border-top: 1px solid #f0f0f0;
+    }
+    
+    .author-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin-right: 12px;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        border: 2px solid white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #0d6efd, #6610f2);
+        color: white;
+    }
+    
+    .avatar-placeholder {
+        font-weight: 700;
+        font-size: 18px;
+        text-transform: uppercase;
+    }
+    
+    .author-details {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .author-name {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #222;
+        margin-bottom: 2px;
+    }
+    
+    .author-role {
+        font-size: 0.85rem;
+        color: #6c757d;
+        font-weight: 500;
+        margin: 0;
+    }
+    
+    /* Button container */
+    .button-container {
+        margin-top: 1.5rem;
+    }
+    
+    .view-btn {
+        background: linear-gradient(90deg, #0d6efd, #6610f2);
+        border: none;
+        padding: 0.7rem 1.8rem;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3);
+        width: 100%;
+        text-align: center;
+    }
+    
+    .view-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, #6610f2, #0d6efd);
+        z-index: -1;
+        transition: opacity 0.3s ease;
+        opacity: 0;
+    }
+    
+    .view-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(13, 110, 253, 0.4);
+    }
+    
+    .view-btn:hover::before {
+        opacity: 1;
+    }
+    
+    /* Empty state styling */
+    .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        background-color: #f8f9fa;
+        border-radius: 20px;
+        box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.05);
+    }
+    
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1.5rem;
+        display: inline-block;
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.1);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+    
+    .empty-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 1rem;
+    }
+    
+    .empty-message {
+        font-size: 1.1rem;
+        color: #666;
+        margin-bottom: 2rem;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .create-btn {
+        background: linear-gradient(90deg, #0d6efd, #6610f2);
+        border: none;
+        padding: 0.8rem 2rem;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 1rem;
+        box-shadow: 0 8px 20px rgba(13, 110, 253, 0.3);
+        transition: all 0.3s ease;
+    }
+    
+    .create-btn:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(13, 110, 253, 0.4);
+        background: linear-gradient(90deg, #0b5ed7, #5a0cd3);
+    }
+    
+    /* Grid spacing */
+    .g-4 {
+        gap: 2rem;
+    }
+</style>
+
+{% endblock %}

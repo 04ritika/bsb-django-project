@@ -1,0 +1,434 @@
+{% extends 'base.html' %}
+{%load static%}
+{% block extra_head %}
+<style>
+    .hero-search-section {
+        background: url("{% static 'images/Blue and White Modern Professional General Linkedin Banner (1).jpg' %}") no-repeat center center;
+        background-size: contain; /* Ensures the entire image fits without being cut */
+        background-position: right center;
+        background-color: #e8efff;
+        padding: 4rem 0;
+        /* Remove negative margin */
+        margin-top: 0;
+        margin-bottom: 2rem;
+        position: relative;
+        width: 100%;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Adds a soft shadow */
+        border-radius: 10px;
+    }
+    .hero-search-section h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #222;
+        margin-bottom: 1rem;
+        text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
+    }
+
+    .hero-search-section p {
+        color: #333;
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+        font-weight: 500;
+        text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
+    }
+
+    .search-container {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .search-form {
+        display: flex;
+        gap: 10px;
+    }
+
+    .search-form .location-input,
+    .search-form .keyword-input {
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        padding: 12px 15px;
+    }
+
+    .search-form .location-input {
+        width: 30%;
+        background-color: #f8f9fa;
+    }
+
+    .search-form .keyword-input {
+        width: 50%;
+    }
+
+    .search-form .search-btn {
+        width: 20%;
+        background-color: #0d6efd;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        padding: 12px;
+        font-weight: 500;
+        transition: background-color 0.3s ease;
+    }
+
+    .search-form .search-btn:hover {
+        background-color: #0b5ed7;
+    }
+
+    .stats-container {
+        margin-top: 2.5rem;
+        display: flex;
+        gap: 3rem;
+    }
+
+    .stat-item {
+        background: rgba(255, 255, 255, 0.85);
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        text-align: center;
+        transition: transform 0.3s ease;
+    }
+
+    .stat-item:hover {
+        transform: translateY(-5px);
+    }
+
+    .stat-item h3 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #0d6efd;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-item p {
+        color: #444;
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+        .search-form {
+            flex-direction: column;
+        }
+
+        .search-form .location-input,
+        .search-form .keyword-input,
+        .search-form .search-btn {
+            width: 100%;
+        }
+
+        .stats-container {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .hero-search-section h1 {
+            font-size: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+{% block content %}
+
+<div class="hero-search-section">
+    <div class="container-fluid px-4">
+        <div class="row">
+            <div class="col-lg-8">
+                <h1>Empowering Women Through Education and Innovation</h1>
+                <p>Live, Learn, and Lead at Banasthali Vidyapith</p>
+                
+                
+
+                <div class="stats-container">
+                    <div class="stat-item">
+                        <h3>16,000+</h3>
+                        <p>Number of Students</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>800+</h3>
+                        <p>Number of Staff</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>85+ Years</h3>
+                        <p>Years of Legacy</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title">Welcome {{ user.username }}!</h2>
+                    <p class="card-text">You have successfully logged in to your account.</p>
+                    
+                    <div class="mt-4">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="mb-0"><strong>Username:</strong> {{ user.username }}</p>
+                                <p class="mb-0"><strong>Email:</strong> {{ user.email }}</p>
+                                <p class="mb-0"><strong>Last Login:</strong> {{ user.last_login|date:"F j, Y, g:i a" }}</p>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <a href="{% url 'profile' %}" class="btn btn-primary me-2">Edit Profile</a>
+                                <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+       <!-- Filter Buttons -->
+       <div class="row justify-content-center mb-3">
+        <div class="col-md-8">
+            <div class="dropdown w-100">
+                <button class="btn btn-outline-primary dropdown-toggle w-100" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    Filter Posts
+                </button>
+                <ul class="dropdown-menu w-100" aria-labelledby="filterDropdown">
+                    <li><a class="dropdown-item post-filter-btn" href="#" data-type="all">All Posts</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li class="dropdown-header">Post Types</li>
+                    <li><a class="dropdown-item post-filter-btn" href="#" data-type="image">Image Posts</a></li>
+                    <li><a class="dropdown-item post-filter-btn" href="#" data-type="blog">Blog Posts</a></li>
+                    <li><a class="dropdown-item post-filter-btn" href="#" data-type="poll">Poll Posts</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li class="dropdown-header">User Types</li>
+                    <li><a class="dropdown-item post-filter-btn" href="#" data-type="student">Student Posts</a></li>
+                    <li><a class="dropdown-item post-filter-btn" href="#" data-type="club">Club Posts</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    </ul>
+            </div>
+        </div>
+    </div>
+    <style>
+        .dropdown-menu {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .dropdown-item {
+            cursor: pointer;
+        }
+        
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .dropdown-item.active {
+            background-color: #007bff;
+            color: white;
+        }
+        
+        .dropdown-header {
+            color: #6c757d;
+            font-weight: bold;
+        }
+        </style>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const filterButtons = document.querySelectorAll('.post-filter-btn');
+    const postCards = document.querySelectorAll('.card.post-card');
+
+    function isWithinDays(createdAt, days) {
+        const postDate = new Date(createdAt);
+        const currentDate = new Date();
+        const timeDiff = currentDate - postDate;
+        const daysDiff = timeDiff / (1000 * 3600 * 24);
+        return daysDiff <= days;
+    }
+
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const filterType = this.getAttribute('data-type');
+
+            // Remove active class from all buttons
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+
+            postCards.forEach(card => {
+                // Determine post type
+                let postType;
+                if (card.querySelector('img[src*="image_post"]')) {
+                    postType = 'image';
+                } else if (card.querySelector('.card-title') && card.querySelector('.card-text')) {
+                    postType = 'blog';
+                } else if (card.querySelector('.poll-options')) {
+                    postType = 'poll';
+                }
+
+                // Detect user type
+                const userLink = card.querySelector('a[href*="/profile/"]');
+                let userType = 'student'; // default
+                
+                if (userLink) {
+                    const username = userLink.textContent.trim();
+                    // Check if username suggests club
+                    userType = username.toLowerCase().includes('club') ? 'club' : 'student';
+                }
+
+                // Get created at time
+                const createdAtText = card.querySelector('.text-muted.small').textContent;
+                const createdAt = new Date(Date.now() - parseTimeAgo(createdAtText));
+
+                // Filtering logic
+                let show = false;
+                switch(filterType) {
+                    case 'all':
+                        show = true;
+                        break;
+                    case 'image':
+                        show = postType === 'image';
+                        break;
+                    case 'blog':
+                        show = postType === 'blog';
+                        break;
+                    case 'poll':
+                        show = postType === 'poll';
+                        break;
+                    case 'student':
+                        show = userType === 'student';
+                        break;
+                    case 'club':
+                        show = userType === 'club';
+                        break;
+                    case '1day':
+                        show = isWithinDays(createdAt, 1);
+                        break;
+                    case '7days':
+                        show = isWithinDays(createdAt, 7);
+                        break;
+                }
+
+                card.style.display = show ? 'block' : 'none';
+            });
+        });
+    });
+
+    // Helper function to parse "x hours/days/minutes ago" text
+    function parseTimeAgo(timeAgoText) {
+        const match = timeAgoText.match(/(\d+)\s*(\w+)/);
+        if (!match) return 0;
+        
+        const value = parseInt(match[1]);
+        const unit = match[2].toLowerCase();
+
+        switch(unit) {
+            case 'minutes':
+            case 'minute':
+                return value * 60 * 1000;
+            case 'hours':
+            case 'hour':
+                return value * 60 * 60 * 1000;
+            case 'days':
+            case 'day':
+                return value * 24 * 60 * 60 * 1000;
+            default:
+                return 0;
+        }
+    }
+});
+</script>
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-8 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center gap-3 mb-3 pb-3 border-bottom">
+                                {% if user.profile.profile_picture %}
+                                <img src="{{ user.profile.profile_picture.url }}" alt="Profile" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                            {% else %}
+                                <img src="{% static 'images/default-avatar.png' %}" alt="Profile" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                            {% endif %}
+                                <input type="text" class="form-control bg-light" placeholder="Share your thoughts..." readonly style="border-radius: 20px; cursor: pointer;" data-bs-toggle="modal" data-bs-target="#createPostModal">
+                            </div>
+                            
+                            <div class="d-flex justify-content-between">
+                                <a href="{% url 'create_post' 'image' %}" class="btn btn-light flex-grow-1 me-2 d-flex align-items-center justify-content-center gap-2">
+                                    <i class="bi bi-image text-success"></i>
+                                    <span>Photo</span>
+                                </a>
+                                <a href="{% url 'create_post' 'blog' %}" class="btn btn-light flex-grow-1 me-2 d-flex align-items-center justify-content-center gap-2">
+                                    <i class="bi bi-file-text text-primary"></i>
+                                    <span>Blog</span>
+                                </a>
+                                <a href="{% url 'create_post' 'poll' %}" class="btn btn-light flex-grow-1 d-flex align-items-center justify-content-center gap-2">
+                                    <i class="bi bi-bar-chart text-warning"></i>
+                                    <span>Poll</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Create Post Modal -->
+        <div class="modal fade" id="createPostModal" tabindex="-1" aria-labelledby="createPostModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="createPostModalLabel">Create Post</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3 d-flex gap-2">
+                            <a href="{% url 'create_post' 'image' %}" class="btn btn-outline-primary flex-grow-1">Image Post</a>
+                            <a href="{% url 'create_post' 'blog' %}" class="btn btn-outline-success flex-grow-1">Blog Post</a>
+                            <a href="{% url 'create_post' 'poll' %}" class="btn btn-outline-info flex-grow-1">Poll Post</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <style>
+            .btn-light {
+                background-color: #f0f2f5;
+                border: none;
+                padding: 8px 0;
+                color: #65676b;
+                font-size: 0.95rem;
+                font-weight: 500;
+            }
+            
+            .btn-light:hover {
+                background-color: #e4e6eb;
+            }
+            
+            .form-control[readonly] {
+                background-color: #f0f2f5;
+                border: none;
+                color: #65676b;
+            }
+            
+            .form-control[readonly]:hover {
+                background-color: #e4e6eb;
+            }
+        </style>
+            <!-- Posts Feed -->
+            <!-- Posts Feed -->
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            {% if posts %}
+                {% for post in posts %}
+                    {% include 'posts/post_card.html' with post=post %}
+                {% endfor %}
+            {% else %}
+                <div class="card">
+                    <div class="card-body text-center">
+                        <p>No posts yet. Be the first to post something!</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

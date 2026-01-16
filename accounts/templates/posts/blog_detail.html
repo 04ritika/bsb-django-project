@@ -1,0 +1,331 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    /* Base Styles */
+    :root {
+        --primary-color: #3a86ff;
+        --secondary-color: #8338ec;
+        --text-primary: #2b2d42;
+        --text-secondary: #5a5d72;
+        --bg-light: #f8f9fa;
+        --bg-white: #ffffff;
+    }
+    
+    /* Main Content Container */
+    .blog-container {
+        max-width: 800px;
+        margin: 3rem auto 5rem;
+        padding: 0 1.5rem;
+        perspective: 1000px;
+    }
+    
+    /* Blog Card */
+    .blog-card {
+        background: var(--bg-white);
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        transition: transform 0.5s ease, box-shadow 0.5s ease;
+        transform: translateY(0);
+        position: relative;
+        z-index: 1;
+    }
+    
+    .blog-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+    }
+    
+    /* Blog Header */
+    .blog-header {
+        position: relative;
+        padding: 2.5rem 2.5rem 1.5rem;
+        overflow: hidden;
+    }
+    
+    .blog-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 8px;
+        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    }
+    
+    .blog-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin: 0 0 0.8rem;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        line-height: 1.2;
+    }
+    
+    .blog-meta {
+        display: flex;
+        align-items: center;
+        font-size: 0.95rem;
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+    }
+    
+    .author-avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin-right: 12px;
+        background: linear-gradient(135deg, #e0e0e0, #f0f0f0);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-secondary);
+        font-size: 16px;
+    }
+    
+    .meta-details {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .author-name {
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+    
+    .post-date {
+        font-size: 0.85rem;
+        opacity: 0.8;
+    }
+    
+    /* Blog Content */
+    .blog-content {
+        padding: 0 2.5rem 2rem;
+        font-size: 1.05rem;
+        color: var(--text-secondary);
+        line-height: 1.8;
+    }
+    
+    .divider {
+        height: 1px;
+        background: linear-gradient(to right, rgba(0,0,0,0.03), rgba(0,0,0,0.1), rgba(0,0,0,0.03));
+        margin: 2rem 0;
+        border: none;
+    }
+    
+    /* Comments Section */
+    .comments-section {
+        padding: 0 2.5rem 2.5rem;
+    }
+    
+    .comments-header {
+        font-size: 1.4rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .comments-header i {
+        color: var(--primary-color);
+        margin-right: 10px;
+    }
+    
+    .comments-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .comment-item {
+        display: flex;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        animation: fadeIn 0.5s ease-out forwards;
+        opacity: 0;
+    }
+    
+    .comment-item:nth-child(1) { animation-delay: 0.1s; }
+    .comment-item:nth-child(2) { animation-delay: 0.2s; }
+    .comment-item:nth-child(3) { animation-delay: 0.3s; }
+    
+    .comment-avatar {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #e0e0e0, #f0f0f0);
+        margin-right: 15px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-secondary);
+        font-size: 16px;
+        text-transform: uppercase;
+    }
+    
+    .comment-content {
+        flex-grow: 1;
+    }
+    
+    .commenter-name {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.3rem;
+    }
+    
+    .comment-text {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+    
+    .no-comments {
+        color: var(--text-secondary);
+        font-style: italic;
+        padding: 1rem;
+        background: rgba(0,0,0,0.02);
+        border-radius: 8px;
+        text-align: center;
+    }
+    
+    /* Comment Form */
+    .comment-form {
+        margin-top: 2rem;
+        background: var(--bg-light);
+        padding: 2rem;
+        border-radius: 12px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .comment-form:focus-within {
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        transform: translateY(-3px);
+    }
+    
+    textarea {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        font-size: 1rem;
+        border: 1px solid rgba(0,0,0,0.1);
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        margin-bottom: 1rem;
+    }
+    
+    textarea:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.2);
+        outline: none;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border: none;
+        padding: 0.8rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(58, 134, 255, 0.2);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 15px rgba(58, 134, 255, 0.3);
+    }
+    
+    .btn-primary::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, rgba(255,255,255,0.2), rgba(255,255,255,0));
+        transition: all 0.5s ease;
+        z-index: 1;
+    }
+    
+    .btn-primary:hover::before {
+        left: 100%;
+    }
+    
+    /* Animations */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+        .blog-header, .blog-content, .comments-section {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+        
+        .blog-title {
+            font-size: 1.8rem;
+        }
+        
+        .comment-form {
+            padding: 1.5rem;
+        }
+    }
+</style>
+
+<div class="blog-container">
+    <div class="blog-card">
+        <div class="blog-header">
+            <h2 class="blog-title">{{ blog_post.title }}</h2>
+            <div class="blog-meta">
+                <div class="author-avatar">
+                    {{ blog_post.post.user.username|slice:":1" }}
+                </div>
+                <div class="meta-details">
+                    <span class="author-name">{{ blog_post.post.user.username }}</span>
+                    <span class="post-date">{{ blog_post.post.created_at|date:"F j, Y" }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="blog-content">
+            {{ blog_post.content|linebreaks }}
+        </div>
+        
+        <hr class="divider">
+        
+        <div class="comments-section">
+            <h4 class="comments-header">Comments</h4>
+            
+            <ul class="comments-list">
+                {% for comment in comments %}
+                    <li class="comment-item">
+                        <div class="comment-avatar">
+                            {{ comment.user.username|slice:":1" }}
+                        </div>
+                        <div class="comment-content">
+                            <div class="commenter-name">{{ comment.user.username }}</div>
+                            <div class="comment-text">{{ comment.content }}</div>
+                        </div>
+                    </li>
+                {% empty %}
+                    <p class="no-comments">No comments yet. Be the first to comment!</p>
+                {% endfor %}
+            </ul>
+            
+            <form method="post" class="comment-form">
+                {% csrf_token %}
+                {{ comment_form.as_p }}
+                <button type="submit" class="btn btn-primary">Add Comment</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

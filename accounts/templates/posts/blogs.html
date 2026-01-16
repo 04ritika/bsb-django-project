@@ -1,0 +1,599 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<!-- Header Section -->
+<div class="header-section">
+    <div class="container d-flex flex-column flex-md-row align-items-center justify-content-between">
+        
+        <div class="header-content text-center text-md-left" data-aos="fade-right" data-aos-duration="1000">
+            <h1 class="brand-name"><span class="highlight2">BSB Blog Spot</span></h1>
+            <h1 class="main-heading">
+                Where Learning Meets
+                <br />
+                <span class="gradient-text">The Expectation</span>
+            </h1>
+            <p class="mt-3 subtitle">
+                Discover Stories, Achievements, and Insights from India's Premier Women's University.
+                Join Our Journey of Excellence in Education, Leadership, and Innovation.
+            </p>
+            <div class="mt-4 button-group">
+                <a href="#" class="btn btn-primary btn-lg me-3 btn-animated">
+                    <span>Explore Thoughts</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+                <a href="#" class="btn btn-glass btn-lg">
+                    <span>Read Experiences</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- 3D Carousel -->
+        <div class="header-carousel mt-4 mt-md-0" data-aos="fade-left" data-aos-duration="1000">
+            <div id="headerCarousel" class="carousel slide carousel-3d" data-bs-ride="carousel">
+                <div class="carousel-indicators">
+                    <button type="button" data-bs-target="#headerCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                    <button type="button" data-bs-target="#headerCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                    <button type="button" data-bs-target="#headerCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                    <button type="button" data-bs-target="#headerCarousel" data-bs-slide-to="3" aria-label="Slide 4"></button>
+                </div>
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <div class="img-container">
+                            <img src="{% static 'images/images (1).jpg' %}" class="d-block w-100" alt="Student">
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <div class="img-container">
+                            <img src="{% static 'images/images (3).jpg' %}" class="d-block w-100" alt="Graduation">
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <div class="img-container">
+                            <img src="{% static 'images/1706330172522.jpg' %}" class="d-block w-100" alt="Campus">
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <div class="img-container">
+                            <img src="{% static 'images/images.jpg' %}" class="d-block w-100" alt="Group Discussion">
+                        </div>
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#headerCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#headerCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Blog Section -->
+<div class="blog-section container mt-5">
+    <h2 class="section-title text-center mb-5" data-aos="fade-up">Latest <span class="gradient-text">Blogs</span></h2>
+    <div class="row g-4">
+        {% for blog in blogs %}
+        <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:'100' }}">
+            <div class="blog-card">
+                <div class="blog-card-content">
+                    <h4 class="blog-title">{{ blog.title }}</h4>
+                    <p class="blog-snippet">{{ blog.content|truncatewords:20 }}</p>
+                    <p class="blog-meta">Posted by <strong>{{ blog.post.user.username }}</strong> on {{ blog.post.created_at|date:"F j, Y" }}</p>
+                    <a href="{% url 'blog_detail' blog.slug %}" class="read-more-btn">
+                        <span>Read More</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center" data-aos="fade-up">
+            <p class="no-blogs-message text-muted">No blogs posted yet. Check back later!</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+/* Import Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+
+/* Global Styles */
+body {
+    font-family: 'Poppins', sans-serif;
+    color: #333;
+    background-color:white;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+}
+
+/* Gradient Text */
+.gradient-text {
+    background: linear-gradient(90deg, #0d6efd, #9333ea);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    display: inline-block;
+}
+
+/* Header Section Styles */
+.header-section {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    padding: 4rem 1.5rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    margin: 2rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.header-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(147, 51, 234, 0.05), rgba(13, 110, 253, 0.05));
+    z-index: 0;
+}
+
+.header-content {
+    position: relative;
+    z-index: 1;
+}
+
+.brand-name {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.main-heading {
+    font-size: 3.2rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    color: #555;
+    line-height: 1.7;
+    font-weight: 400;
+    max-width: 600px;
+}
+
+.header-content .highlight {
+    color: #9333ea;
+}
+
+.header-content .highlight2 {
+    color: #0d6efd;
+    font-weight: 700;
+}
+
+/* 3D Carousel Styles */
+.header-carousel {
+    width: 100%;
+    max-width: 500px;
+    perspective: 1200px;
+}
+
+.carousel-3d {
+    transform-style: preserve-3d;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+}
+
+.carousel-inner {
+    position: relative;
+    transform-style: preserve-3d;
+}
+
+.carousel-item {
+    backface-visibility: hidden;
+}
+
+.img-container {
+    overflow: hidden;
+    border-radius: 20px;
+    transform: translateZ(0);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+.carousel-item img {
+    height: 350px;
+    object-fit: cover;
+    transition: transform 0.7s ease-in-out;
+}
+
+.carousel-item img:hover {
+    transform: scale(1.05);
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+    width: 10%;
+    opacity: 0.7;
+    z-index: 10;
+}
+
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+    opacity: 1;
+}
+
+.carousel-indicators {
+    margin-bottom: 0.5rem;
+    z-index: 10;
+}
+
+.carousel-indicators button {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.5);
+    border: none;
+    margin: 0 5px;
+    transition: all 0.3s ease;
+}
+
+.carousel-indicators .active {
+    background-color: white;
+    width: 12px;
+    height: 12px;
+    transform: scale(1.2);
+}
+
+/* Button Styles */
+.button-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.btn {
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    padding: 0.8rem 1.5rem;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #0d6efd, #0a58ca);
+    border: none;
+    box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #0a58ca, #0d6efd);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(13, 110, 253, 0.4);
+}
+
+.btn-animated i {
+    transition: transform 0.3s ease;
+}
+
+.btn-animated:hover i {
+    transform: translateX(5px);
+}
+
+.btn-glass {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #0d6efd;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.btn-glass:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    color: #0a58ca;
+}
+
+/* Blog Section Styles */
+.blog-section {
+    padding: 3rem 1.5rem;
+    background: linear-gradient(135deg, #f9f9f9, #f0f0f0);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.blog-card {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    height: 100%;
+    transform: translateY(0);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    position: relative;
+}
+
+.blog-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 15px 40px rgba(147, 51, 234, 0.15);
+}
+
+.blog-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(90deg, #0d6efd, #9333ea);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+}
+
+.blog-card:hover::before {
+    transform: scaleX(1);
+}
+
+.blog-card-content {
+    padding: 1.8rem;
+}
+
+.blog-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #222;
+    line-height: 1.4;
+}
+
+.blog-snippet {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 1.2rem;
+    line-height: 1.7;
+    font-weight: 400;
+}
+
+.blog-meta {
+    font-size: 0.9rem;
+    color: #777;
+    margin-bottom: 1.2rem;
+    font-weight: 400;
+}
+
+.read-more-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #0d6efd;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.read-more-btn::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0%;
+    height: 2px;
+    background: linear-gradient(90deg, #0d6efd, #9333ea);
+    transition: width 0.3s ease;
+}
+
+.read-more-btn:hover {
+    color: #9333ea;
+}
+
+.read-more-btn:hover::after {
+    width: 100%;
+}
+
+.read-more-btn:hover svg {
+    transform: translateX(5px);
+}
+
+.read-more-btn svg {
+    transition: transform 0.3s ease;
+}
+
+.no-blogs-message {
+    font-size: 1.3rem;
+    color: #777;
+    font-weight: 400;
+}
+
+/* Animation Keyframes */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .main-heading {
+        font-size: 2.5rem;
+    }
+    
+    .header-carousel {
+        max-width: 450px;
+    }
+    
+    .carousel-item img {
+        height: 300px;
+    }
+}
+
+@media (max-width: 768px) {
+    .header-section {
+        padding: 3rem 1rem;
+    }
+    
+    .main-heading {
+        font-size: 2.2rem;
+    }
+    
+    .subtitle {
+        font-size: 1rem;
+    }
+    
+    .header-carousel {
+        max-width: 100%;
+        margin-top: 2rem;
+    }
+    
+    .carousel-item img {
+        height: 250px;
+    }
+    
+    .blog-title {
+        font-size: 1.3rem;
+    }
+
+    .blog-snippet {
+        font-size: 0.95rem;
+    }
+    
+    .button-group {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .main-heading {
+        font-size: 1.8rem;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+    }
+    
+    .btn {
+        padding: 0.7rem 1.3rem;
+        font-size: 0.95rem;
+    }
+}
+</style>
+
+<!-- Additional Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+
+<script>
+    // Initialize AOS (Animate On Scroll)
+    document.addEventListener('DOMContentLoaded', function() {
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+        
+        // 3D effect for carousel
+        const carousel = document.querySelector('.carousel-3d');
+        if (carousel) {
+            carousel.addEventListener('mouseenter', function() {
+                this.style.transform = 'rotateY(-5deg) rotateX(3deg)';
+                this.style.transition = 'transform 0.3s ease';
+            });
+            
+            carousel.addEventListener('mouseleave', function() {
+                this.style.transform = 'rotateY(0) rotateX(0)';
+            });
+            
+            carousel.addEventListener('mousemove', function(e) {
+                const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+                const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+                this.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+            });
+        }
+        
+        // Interactive buttons effect
+        const buttons = document.querySelectorAll('.btn');
+        buttons.forEach(button => {
+            button.addEventListener('mouseenter', function(e) {
+                const x = e.clientX - button.getBoundingClientRect().left;
+                const y = e.clientY - button.getBoundingClientRect().top;
+                
+                const ripple = document.createElement('span');
+                ripple.classList.add('ripple-effect');
+                ripple.style.left = `${x}px`;
+                ripple.style.top = `${y}px`;
+                
+                button.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+    });
+</script>
+
+<style>
+    /* Ripple Effect for Buttons */
+    .btn {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .ripple-effect {
+        position: absolute;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.5);
+        width: 100px;
+        height: 100px;
+        margin-top: -50px;
+        margin-left: -50px;
+        animation: ripple 0.6s linear;
+        transform: scale(0);
+        opacity: 1;
+    }
+    
+    @keyframes ripple {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+</style>
+{% endblock %}

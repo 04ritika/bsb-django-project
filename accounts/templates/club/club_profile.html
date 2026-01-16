@@ -1,0 +1,1210 @@
+{% extends 'base.html' %}
+{% load static %}
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"></script>
+{% block content %}
+<div class="custom-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <!-- Club Logo Section -->
+            <div class="col-md-4 text-center">
+                {% if club.club_logo %}
+                    <img src="{{ club.club_logo.url }}" class="img-fluid rounded-circle mb-3" style="max-width: 150px;">
+                {% endif %}
+            </div>
+
+            <!-- Club Information Section -->
+            <div class="col-md-8">
+                <h1 class="club-title">{{ club.name }}</h1>
+                <p class="club-description">{{ club.description }}</p>
+                <p><strong>Established:</strong> {{ club.established_date }}</p>
+                <p><strong>Website:</strong> <a href="{{ club.website }}">{{ club.website }}</a></p>
+                <p><strong>Email:</strong> {{ club.email }}</p>
+                <p><strong>Type:</strong> {{ club.club_type }}</p>
+
+                <div class="stats-edit-container">
+                    <div class="stats">
+                        <span><strong>{{ post_count }}</strong> posts</span>
+                        <span><strong>{{ total_likes }}</strong> likes</span>
+                    </div>
+                    
+                    {% if request.user == club.created_by %}
+                        <a href="{% url 'edit_club_profile' club.slug %}" class="btn btn-primary">Edit Club</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Faculty Members Section -->
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h4>Faculty Members</h4>
+            {% if request.user == club.created_by %}
+                <a href="{% url 'add_faculty_member' club.slug %}" class="btn btn-primary mb-3">Add Faculty Member</a>
+            {% endif %}
+
+            <div class="row">
+                {% for faculty in club.faculty_members.all %}
+                    <div class="col-md-6 mb-4">
+                        <div class="faculty-card">
+                            <div class="faculty-img-container">
+                                {% if faculty.profile_pic %}
+                                    <img src="{{ faculty.profile_pic.url }}" alt="{{ faculty.name }}" class="faculty-img">
+                                {% else %}
+                                    <div class="faculty-placeholder-img">
+                                        {{ faculty.name|make_list|first|upper }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="faculty-details">
+                                <h5>{{ faculty.name }}</h5>
+                                <p class="faculty-position">{{ faculty.position }}</p>
+                                {% if faculty.department %}
+                                    <p class="faculty-dept">{{ faculty.department }}</p>
+                                {% endif %}
+                                <div class="faculty-contact">
+                                    {% if faculty.email %}
+                                        <a href="mailto:{{ faculty.email }}" class="faculty-contact-item">
+                                            <i class="bi bi-envelope"></i>
+                                        </a>
+                                    {% endif %}
+                                    {% if faculty.linkedin %}
+                                        <a href="{{ faculty.linkedin }}" target="_blank" class="faculty-contact-item">
+                                            <i class="bi bi-linkedin"></i>
+                                        </a>
+                                    {% endif %}
+                                    {% if faculty.website %}
+                                        <a href="{{ faculty.website }}" target="_blank" class="faculty-contact-item">
+                                            <i class="bi bi-globe"></i>
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-12">
+                        <p class="text-muted text-center">No faculty members associated with this club yet.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Replace the Club Members section in club_profile.html with this -->
+<!-- Core Team Section -->
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h4>Core Team</h4>
+            {% if request.user == club.created_by %}
+                <a href="{% url 'add_club_member' club.slug %}" class="btn btn-primary mb-3">Add Member</a>
+            {% endif %}
+
+            <ul class="list-group">
+                {% for member in club.members.all %}
+                    {% if member.is_core_team %}
+                        <li class="list-group-item">
+                            <strong>{{ member.user.username }}</strong> - {{ member.role }}
+                        </li>
+                    {% endif %}
+                {% empty %}
+                    <p class="text-muted">No core team members yet.</p>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+<!-- Add this section after the Club Members section in club_profile.html -->
+<!-- Team Section -->
+<!-- Add this after the Core Team section in club_profile.html -->
+<!-- Teams Section -->
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4>Teams</h4>
+                {% if request.user == club.created_by %}
+                    <a href="{% url 'create_team' club.slug %}" class="btn btn-success">Create Team</a>
+                {% endif %}
+            </div>
+            
+            {% if club.teams.all %}
+                <div class="list-group mt-3">
+                    {% for team in club.teams.all %}
+                        <a href="{% url 'team_detail' club.slug team.id %}" class="list-group-item list-group-item-action">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-1">{{ team.name }}</h5>
+                                <span class="badge bg-primary rounded-pill">{{ team.members.count }} members</span>
+                            </div>
+                            {% if team.description %}
+                                <p class="mb-1 text-muted">{{ team.description|truncatechars:100 }}</p>
+                            {% endif %}
+                        </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted">No teams have been created yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<!-- Club Posts Section -->
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h4>Club Posts</h4>
+            {% for post in posts %}
+                {% include 'posts/post_card.html' with post=post %}
+            {% empty %}
+                <p class="text-center text-muted">No posts yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Add this after the Club Posts Section in club_profile.html -->
+<!-- FAQ Section -->
+<!-- FAQ Section -->
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">Questions & Answers</h4>
+                        <!-- Allow all users to ask questions -->
+                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#askQuestionModal">
+                            Ask a Question
+                        </button>
+                    </div>
+                </div>
+                <!-- Rest of the template remains the same... -->
+                <div class="card-body">
+                    {% if faqs %}
+                        <div class="accordion" id="faqAccordion">
+                            {% for faq in faqs %}
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading{{ faq.id }}">
+                                        <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" 
+                                                type="button" 
+                                                data-bs-toggle="collapse" 
+                                                data-bs-target="#collapse{{ faq.id }}" 
+                                                aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}" 
+                                                aria-controls="collapse{{ faq.id }}">
+                                            <strong>{{ faq.question|truncatechars:80 }}</strong>
+                                            {% if not faq.answer %}
+                                                <span class="badge bg-warning ms-2">Unanswered</span>
+                                            {% endif %}
+                                        </button>
+                                    </h2>
+                                    <div id="collapse{{ faq.id }}" 
+                                         class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" 
+                                         aria-labelledby="heading{{ faq.id }}" 
+                                         data-bs-parent="#faqAccordion">
+                                        <div class="accordion-body">
+                                            <div class="faq-question mb-3">
+                                                <p>{{ faq.question }}</p>
+                                                <small class="text-muted">
+                                                    Asked by: {{ faq.asked_by.username }} - {{ faq.created_at|date:"F j, Y" }}
+                                                </small>
+                                            </div>
+                                            
+                                            {% if faq.answer %}
+                                                <div class="faq-answer p-3 bg-light rounded">
+                                                    <p>{{ faq.answer }}</p>
+                                                    <small class="text-muted">
+                                                        Answered: {{ faq.answered_at|date:"F j, Y" }}
+                                                    </small>
+                                                </div>
+                                            {% elif can_answer %}
+                                                <form method="post" class="mt-3">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="faq_id" value="{{ faq.id }}">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Answer this question:</label>
+                                                        <textarea name="answer" class="form-control" rows="3" required></textarea>
+                                                    </div>
+                                                    <button type="submit" name="answer_submit" class="btn btn-success btn-sm">
+                                                        Post Answer
+                                                    </button>
+                                                </form>
+                                            {% else %}
+                                                <p class="text-muted fst-italic">This question hasn't been answered yet.</p>
+                                            {% endif %}
+                                            
+                                            {% if is_creator %}
+                                                <div class="d-flex mt-3">
+                                                    {% if not faq.is_approved %}
+                                                        <form method="post" class="me-2">
+                                                            {% csrf_token %}
+                                                            <input type="hidden" name="faq_id" value="{{ faq.id }}">
+                                                            <button type="submit" name="approve_faq" class="btn btn-outline-success btn-sm">
+                                                                Approve
+                                                            </button>
+                                                        </form>
+                                                    {% endif %}
+                                                    <form method="post">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="faq_id" value="{{ faq.id }}">
+                                                        <button type="submit" name="delete_faq" class="btn btn-outline-danger btn-sm">
+                                                            Delete
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-center text-muted my-4">No questions have been asked yet. Be the first to ask!</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ask Question Modal -->
+<div class="modal fade" id="askQuestionModal" tabindex="-1" aria-labelledby="askQuestionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="askQuestionModalLabel">Ask a Question</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post">
+                {% csrf_token %}
+                <div class="modal-body">
+                    {{ question_form.question }}
+                    {% if not is_member and not is_creator %}
+                    <div class="form-text text-muted mt-2">
+                        Note: Your question will be visible once approved by the club administrator.
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" name="question_submit" class="btn btn-primary">Submit Question</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="container mt-5">
+    <div class="row justify-content-between align-items-center mb-3">
+        <div class="col">
+            <h4>Club Events</h4>
+        </div>
+        {% if request.user == club.created_by %}
+        <div class="col-auto">
+            <a href="{% url 'create_event' club.slug %}" class="btn btn-primary">
+                Create Event
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="container mt-5">
+        <div class="row justify-content-between align-items-center mb-3">
+            <div class="col">
+                <h4>Club Events</h4>
+            </div>
+            {% if request.user == club.created_by %}
+            <div class="col-auto">
+                <a href="{% url 'create_event' club.slug %}" class="btn btn-primary">
+                    Create Event
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    
+        <div class="row">
+            {% for event in club.events.all %}
+                <div class="col-md-4 mb-4">
+                    <div class="card event-card" data-bs-toggle="modal" data-bs-target="#eventModal{{ event.id }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ event.title }}</h5>
+                            <p class="event-summary">
+                                {{ event.description|truncatechars:100 }}
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    {{ event.start_date|date:"F d, Y" }}
+                                </small>
+                                <span class="badge {% if event.is_upcoming %}bg-success{% else %}bg-secondary{% endif %}">
+                                    {% if event.is_upcoming %}Upcoming{% else %}Past Event{% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <p class="card-text text-muted">No events have been created yet.</p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    
+        <!-- Event Detail Modals -->
+        
+    <!-- Event Detail Modals -->
+    <!-- Event Detail Modals -->
+{% for event in club.events.all %}
+<div class="modal fade" id="eventModal{{ event.id }}" tabindex="-1" aria-labelledby="eventModalLabel{{ event.id }}" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="eventModalLabel{{ event.id }}">{{ event.title }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {% if event.event_image %}
+                    <img src="{{ event.event_image.url }}" class="modal-image" alt="{{ event.title }}">
+                {% endif %}
+                
+                <div class="event-details">
+                    <p>{{ event.description }}</p>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Start Date:</strong> {{ event.start_date|date:"F d, Y" }}</p>
+                            {% if event.end_date %}
+                                <p><strong>End Date:</strong> {{ event.end_date|date:"F d, Y" }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Location:</strong> {{ event.location }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Event Gallery Section -->
+                <div class="event-gallery mt-4">
+                    <h5 class="gallery-title">Event Gallery</h5>
+                    
+                    {% if event.gallery_images.all %}
+                        <div class="gallery-collage">
+                            {% for gallery_item in event.gallery_images.all %}
+                                <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#galleryImageModal{{ gallery_item.id }}">
+                                    <img src="{{ gallery_item.image.url }}" alt="Event gallery image">
+                                    <div class="gallery-overlay">
+                                        <span class="gallery-caption">{{ gallery_item.caption|truncatechars:20 }}</span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center">No gallery images available for this event.</p>
+                    {% endif %}
+                </div>
+                
+                {% if request.user == club.created_by and event.gallery_images.all|length < 5 %}
+                    <div class="text-center mt-3">
+                        <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addGalleryImageModal{{ event.id }}">
+                            <i class="bi bi-plus-circle"></i> Add Gallery Image
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Gallery Image Detail Modal (for each gallery image) -->
+{% for gallery_item in event.gallery_images.all %}
+<div class="modal fade" id="galleryImageModal{{ gallery_item.id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ gallery_item.caption }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <img src="{{ gallery_item.image.url }}" class="img-fluid full-gallery-image" alt="{{ gallery_item.caption }}">
+                <div class="gallery-description mt-3">
+                    <p>{{ gallery_item.description }}</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                {% if request.user == club.created_by %}
+                    <form method="post" action="{% url 'delete_gallery_image' club.slug event.id gallery_item.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger">Delete Image</button>
+                    </form>
+                {% endif %}
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Add Gallery Image Modal -->
+{% if request.user == club.created_by %}
+<div class="modal fade" id="addGalleryImageModal{{ event.id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Gallery Image</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{% url 'add_gallery_image' club.slug event.id %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="galleryImage" class="form-label">Image</label>
+                        <input type="file" class="form-control" id="galleryImage" name="image" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="galleryCaption" class="form-label">Caption</label>
+                        <input type="text" class="form-control" id="galleryCaption" name="caption" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="galleryDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="galleryDescription" name="description" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Image</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+</div>
+<style>
+    /* Modern Color Scheme */
+    /* Modern Club Profile Page Styles */
+
+    /* ========== FONTS & TYPOGRAPHY ========== */
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap');
+    
+    body {
+        font-family: 'Poppins', sans-serif;
+        line-height: 1.6;
+        color: #333;
+        overflow-x: hidden;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+    }
+    
+    .club-title {
+        font-size: 2.8rem;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, #2c3e50, #4ca1af);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        transition: all 0.3s ease;
+    }
+    
+    .club-title:hover {
+        letter-spacing: 0.5px;
+    }
+    
+    .club-description {
+        font-size: 1.2rem;
+        font-weight: 400;
+        color: #555;
+        line-height: 1.7;
+        margin-bottom: 1.8rem;
+    }
+    
+    /* ========== HEADER SECTION ========== */
+    .custom-header {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        padding: 3rem 0;
+        border-radius: 0 0 30px 30px;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .custom-header:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255, 255, 255, 0.1)" d="M0,64L48,69.3C96,75,192,85,288,117.3C384,149,480,203,576,202.7C672,203,768,149,864,138.7C960,128,1056,160,1152,181.3C1248,203,1344,213,1392,218.7L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+        background-repeat: no-repeat;
+        background-position: bottom;
+        background-size: cover;
+        opacity: 0.5;
+        z-index: 0;
+    }
+    
+    .custom-header .container {
+        position: relative;
+        z-index: 1;
+    }
+    
+    /* Club Logo Animation */
+    .custom-header img.img-fluid {
+        border: 5px solid white;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        transition: all 0.5s ease;
+        transform: perspective(1000px) rotateY(0deg);
+        max-width: 180px !important;
+        height: 180px;
+        object-fit: cover;
+    }
+    
+    .custom-header img.img-fluid:hover {
+        transform: perspective(1000px) rotateY(10deg);
+        box-shadow: -15px 15px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Stats Section */
+    /* Stats and button layout adjustments */
+.stats {
+    display: flex;
+    gap: 0.5rem; /* Reduced gap between stats items */
+    font-size: 1.1rem;
+    color: #444;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem; /* Add small space before the Edit button */
+}
+
+.stats span {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.8rem 1.2rem;
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(5px);
+    border-radius: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stats span strong {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+/* Adjust the .btn-primary specifically for the Edit Club button to align properly */
+.stats-edit-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Align buttons to the left */
+}
+
+.stats-edit-container .btn-primary {
+    margin-top: 0.75rem; /* Smaller margin for closer alignment */
+}
+    
+    /* ========== BUTTONS ========== */
+    .btn {
+        border-radius: 8px;
+        font-weight: 500;
+        padding: 0.7rem 1.5rem;
+        transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        position: relative;
+        overflow: hidden;
+        font-size: 0.95rem;
+        letter-spacing: 0.5px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    .btn:active {
+        transform: translateY(1px);
+    }
+    
+    .btn::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+    
+    .btn:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(90deg, #0d6efd, #6610f2);
+        border: none;
+    }
+    
+    .btn-primary:hover {
+        background: linear-gradient(90deg, #0d6efd, #6610f2);
+    }
+    
+    .btn-success {
+        background: linear-gradient(135deg, #11998e, #38ef7d);
+        border: none;
+    }
+    
+    .btn-success:hover {
+        background: linear-gradient(135deg, #0d8b82, #27df6b);
+    }
+    
+    .btn-outline-danger, .btn-outline-success {
+        background: transparent;
+        position: relative;
+        z-index: 1;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-outline-danger::after, .btn-outline-success::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0;
+        height: 100%;
+        z-index: -1;
+        transition: width 0.3s ease;
+        border-radius: 8px;
+    }
+    
+    .btn-outline-danger::after {
+        background-color: #ff4d6d;
+    }
+    
+    .btn-outline-success::after {
+        background-color: #38ef7d;
+    }
+    
+    .btn-outline-danger:hover, .btn-outline-success:hover {
+        color: white;
+        border-color: transparent;
+    }
+    
+    .btn-outline-danger:hover::after, .btn-outline-success:hover::after {
+        width: 100%;
+    }
+    
+    /* ========== CARD DESIGNS ========== */
+    .card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+    
+    .card:hover {
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card-header {
+        background: linear-gradient(45deg, #f3f4f6, #ffffff);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 1.5rem;
+    }
+    
+    .card-body {
+        padding: 1.5rem;
+    }
+    
+    .list-group-item {
+        border: none;
+        border-radius: 10px !important;
+        margin-bottom: 0.5rem;
+        padding: 1rem 1.5rem;
+        background-color: #f9f9f9;
+        transition: all 0.3s ease;
+    }
+    
+    .list-group-item:hover {
+        background-color: #f0f0f0;
+        transform: translateX(5px);
+    }
+    
+    .list-group-item strong {
+        color: #4e54c8;
+    }
+    
+    /* ========== ACCORDION STYLING ========== */
+    .accordion-item {
+        border: none;
+        margin-bottom: 1rem;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    }
+    
+    .accordion-button {
+        font-weight: 500;
+        padding: 1.2rem 1.5rem;
+        border-radius: 10px;
+        background: linear-gradient(45deg, #f9f9f9, #ffffff);
+    }
+    
+    .accordion-button:not(.collapsed) {
+        color: #4e54c8;
+        background: linear-gradient(45deg, #f3f4f6, #ffffff);
+    }
+    
+    .accordion-button:focus {
+        box-shadow: none;
+        border-color: rgba(0, 0, 0, 0.1);
+    }
+    
+    .accordion-body {
+        padding: 1.5rem;
+        background-color: #ffffff;
+    }
+    
+    .faq-answer {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        padding: 1.2rem !important;
+        border-left: 3px solid #4e54c8;
+    }
+    
+    /* ========== EVENT CARDS ========== */
+    .event-card {
+        max-width: 100%;
+        height: 220px;
+        margin-bottom: 30px;
+        border-radius: 15px;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        overflow: hidden;
+        position: relative;
+        z-index: 1;
+        border: none;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .event-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, #0d6efd, #6610f2);
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        z-index: -1;
+    }
+    
+    .event-card:hover {
+        transform: translateY(-10px) rotateX(5deg);
+        box-shadow: 0 20px 30px rgba(0, 0, 0, 0.15);
+    }
+    
+    .event-card:hover::before {
+        opacity: 0.8;
+    }
+    
+    .event-card .card-body {
+        padding: 1.5rem;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .event-card:hover .card-title,
+    .event-card:hover .event-summary,
+    .event-card:hover .text-muted {
+        color: white !important;
+    }
+    
+    .event-card .card-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        transition: color 0.3s ease;
+    }
+    
+    .event-card .event-summary {
+        font-size: 0.95rem;
+        color: #666;
+        height: auto;
+        flex-grow: 1;
+        transition: color 0.3s ease;
+    }
+    
+    .badge {
+        padding: 0.5rem 0.8rem;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    
+    .bg-success {
+        background: linear-gradient(135deg, #11998e, #38ef7d) !important;
+    }
+    
+    .bg-secondary {
+        background: linear-gradient(135deg, #8e9eab, #eef2f3) !important;
+        color: #333 !important;
+    }
+    
+    /* Modal styling */
+    .modal-content {
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+    
+    .modal-header {
+        padding: 1.5rem;
+        background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+        border-bottom: none;
+    }
+    
+    .modal-title {
+        font-weight: 600;
+        letter-spacing: -0.5px;
+        color: #2c3e50;
+    }
+    
+    .modal-body {
+        padding: 2rem;
+    }
+    
+    .modal-footer {
+        padding: 1.5rem;
+        border-top: none;
+    }
+    
+    /* Add these rules to control the modal image size */
+.modal-image {
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.8s ease;
+    max-width: 100%;
+    max-height: 300px; /* Limit the height of the image */
+    object-fit: cover; /* Maintain aspect ratio while covering the area */
+    display: block;
+    margin: 0 auto 20px; /* Add bottom margin for spacing */
+}
+
+/* If you want to ensure the event details are easily visible without scrolling */
+.modal-body {
+    max-height: 80vh; /* Set maximum height relative to viewport */
+    overflow-y: auto; /* Enable scrolling if content exceeds height */
+}
+/* Faculty Members Section Styles */
+.faculty-card {
+    background: #ffffff;
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    height: 100%;
+}
+
+.faculty-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.faculty-img-container {
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+    margin-right: 1rem;
+}
+
+.faculty-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.faculty-placeholder-img {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0d6efd, #6610f2);
+    color: white;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.faculty-details {
+    flex-grow: 1;
+}
+
+.faculty-details h5 {
+    margin: 0 0 0.3rem 0;
+    font-size: 1.1rem;
+    color: #2c3e50;
+}
+
+.faculty-position {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #0d6efd;
+    margin-bottom: 0.2rem;
+}
+
+.faculty-dept {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+}
+
+.faculty-contact {
+    display: flex;
+    gap: 0.7rem;
+}
+
+.faculty-contact-item {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #f0f2f5;
+    color: #4e54c8;
+    transition: all 0.3s ease;
+}
+
+.faculty-contact-item:hover {
+    background: #4e54c8;
+    color: white;
+    transform: scale(1.1);
+}
+
+/* Ensure Bootstrap Icons are loaded */
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css");
+/* Improve layout for event details */
+.event-details {
+    margin-top: 15px;
+}
+    /* ========== ANIMATION KEYFRAMES ========== */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Add animations to content */
+    .container {
+        animation: fadeIn 0.8s ease;
+    }
+    
+    /* Staggered animations for different sections */
+    .animate-section {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.8s ease;
+    }
+    
+    /* ========== MEDIA QUERIES ========== */
+    @media (max-width: 768px) {
+        .club-title {
+            font-size: 2rem;
+        }
+        
+        .club-description {
+            font-size: 1rem;
+        }
+        
+        .custom-header {
+            padding: 2rem 0;
+        }
+        
+        .stats {
+            flex-wrap: wrap;
+        }
+    }
+    /* ========== EVENT GALLERY STYLING ========== */
+.event-gallery {
+    margin-top: 2rem;
+}
+
+.gallery-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    position: relative;
+    padding-bottom: 0.5rem;
+}
+
+.gallery-title:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, #0d6efd, #6610f2);
+    border-radius: 10px;
+}
+
+.gallery-collage {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-auto-rows: 150px;
+    grid-gap: 10px;
+    margin-bottom: 1.5rem;
+}
+
+/* First image is larger */
+.gallery-collage .gallery-item:first-child {
+    grid-column: span 2;
+    grid-row: span 2;
+}
+
+.gallery-item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.gallery-item:hover {
+    transform: scale(1.03);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: all 0.5s ease;
+}
+
+.gallery-item:hover img {
+    transform: scale(1.1);
+}
+
+.gallery-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(0deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
+    padding: 1rem;
+    transition: all 0.3s ease;
+    opacity: 0;
+}
+
+.gallery-item:hover .gallery-overlay {
+    opacity: 1;
+}
+
+.gallery-caption {
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.full-gallery-image {
+    width: 100%;
+    max-height: 70vh;
+    object-fit: contain;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.gallery-description {
+    margin-top: 1.5rem;
+    font-size: 1rem;
+    color: #444;
+    line-height: 1.6;
+}
+
+/* Button styling for Add Gallery Image */
+.btn-outline-primary {
+    border: 2px solid #0d6efd;
+    color: #0d6efd;
+    background: transparent;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-primary:hover {
+    background: linear-gradient(90deg, #0d6efd, #6610f2);
+    border-color: transparent;
+    color: white;
+}
+
+/* Responsive styling for smaller screens */
+@media (max-width: 576px) {
+    .gallery-collage {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .full-gallery-image {
+        max-height: 50vh;
+    }
+}
+    /* Javascript to add for animations (add this as a separate script) */
+    /* 
+    document.addEventListener('DOMContentLoaded', function() {
+        const sections = document.querySelectorAll('.container > .row');
+        sections.forEach((section, index) => {
+            section.classList.add('animate-section');
+            setTimeout(() => {
+                section.style.opacity = 1;
+                section.style.transform = 'translateY(0)';
+            }, 200 * (index + 1));
+        });
+        
+        // Add scroll animation
+        const animateOnScroll = () => {
+            const sections = document.querySelectorAll('.animate-section');
+            sections.forEach(section => {
+                const sectionTop = section.getBoundingClientRect().top;
+                if(sectionTop < window.innerHeight - 100) {
+                    section.style.opacity = 1;
+                    section.style.transform = 'translateY(0)';
+                }
+            });
+        };
+        
+        window.addEventListener('scroll', animateOnScroll);
+        animateOnScroll(); // Initial check
+    });
+    */
+</style>
+
+{% endblock %}

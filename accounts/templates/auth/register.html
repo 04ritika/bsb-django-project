@@ -1,0 +1,46 @@
+<!-- templates/auth/register.html - Modified -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title mb-4">Choose Registration Type</h2>
+                    
+                    <div class="d-grid gap-3">
+                        <a href="{% url 'student_register' %}" class="btn btn-primary btn-lg">
+                            Register as Student
+                        </a>
+                        
+                        <button class="btn btn-info btn-lg" type="button" data-bs-toggle="collapse" data-bs-target="#regularForm">
+                            Register as Regular User
+                        </button>
+                    </div>
+
+                    <div class="collapse mt-4" id="regularForm">
+                        <h3>Regular User Registration</h3>
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="user_type" value="regular">
+                            {% for field in form %}
+                                <div class="form-group mb-3">
+                                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.errors %}
+                                        {% for error in field.errors %}
+                                            <small class="text-danger">{{ error }}</small>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                            <button type="submit" class="btn btn-primary">Register</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

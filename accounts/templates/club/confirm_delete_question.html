@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h2 class="mb-0">Confirm Deletion</h2>
+                </div>
+                <div class="card-body">
+                    <p>Are you sure you want to delete the following question?</p>
+                    <blockquote class="blockquote my-4">
+                        <p>{{ question.question }}</p>
+                        <footer class="blockquote-footer">Asked by <cite>{{ question.asked_by.username }}</cite></footer>
+                    </blockquote>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-flex">
+                            <button type="submit" class="btn btn-danger me-2">Yes, Delete</button>
+                            <a href="{% url 'club_questions' club.slug %}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

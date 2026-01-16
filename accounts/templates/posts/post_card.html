@@ -1,0 +1,275 @@
+<!-- templates/posts/post_card.html -->
+{% load static %}
+<div class="card post-card mb-4" data-post-id="{{ post.id }}">    <div class="card-header">
+        <div class="d-flex align-items-center">
+            {% if post.user.profile.profile_picture %}
+            <img src="{{ post.user.profile.profile_picture.url }}" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+        {% else %}
+            <img src="{% static 'images/default-avatar.png' %}" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+        {% endif %}
+
+            <div>
+                <a href="{% url 'public_profile' post.user.username %}" class="text-decoration-none text-dark fw-bold">
+                    {{ post.user.username }}
+                </a>
+                <div class="text-muted small">{{ post.created_at|timesince }} ago</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card-body">
+        {% if post.post_type == 'image' %}
+            <img src="{{ post.image_post.image.url }}" class="img-fluid mb-3" alt="Post Image">
+        {% endif %}
+        
+        {% if post.post_type == 'blog' %}
+            <h5 class="card-title">{{ post.blog_post.title }}</h5>
+            <p class="card-text">{{ post.blog_post.content|truncatewords:50 }}</p>
+            {% if post.blog_post.slug %}
+            <a href="{% url 'blog_detail' post.blog_post.slug %}" class="btn btn-link p-0">Read more</a>
+        {% endif %}
+        {% endif %}
+        
+      
+        {% if post.post_type == 'poll' %}
+        <h5 class="card-title">{{ post.poll_post.question }}</h5>
+        <div class="poll-options" data-ends-at="{{ post.poll_post.ends_at|date:'c' }}" data-post-id="{{ post.id }}">
+            {% for option in post.poll_post.options.all %}
+                <div class="poll-option mb-2" data-option-id="{{ option.id }}">
+                    <div class="progress mb-1">
+                        <div class="progress-bar" role="progressbar" 
+                             style="width: {% widthratio option.votes.count post.poll_post.total_votes 100 %}%"
+                             aria-valuenow="{% widthratio option.votes.count post.poll_post.total_votes 100 %}"
+                             aria-valuemin="0" 
+                             aria-valuemax="100">
+                        </div>
+                    </div>
+                    <button class="btn btn-outline-primary w-100 vote-button {% if request.user in option.votes.all %}active{% endif %}"
+                            {% if post.poll_post.is_expired or request.user in option.votes.all %}disabled{% endif %}>
+                        {{ option.option_text }}
+                        <span class="vote-count">({{ option.votes.count }})</span>
+                    </button>
+                </div>
+            {% endfor %}
+            <div class="text-muted small">
+                {% if not post.poll_post.is_expired %}
+                    Ends in: <span class="poll-timer" data-ends-at="{{ post.poll_post.ends_at|date:'c' }}"></span>
+                {% else %}
+                    Poll ended
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+        
+        {% if post.caption %}
+            <p class="card-text">{{ post.caption }}</p>
+        {% endif %}
+        
+        <div class="post-actions mt-3">
+            <button class="btn btn-link like-button {% if request.user in post.likes.all %}liked{% endif %}">
+                <i class="bi bi-heart{% if request.user in post.likes.all %}-fill{% endif %}"></i>
+                <span class="likes-count">{{ post.likes.count }}</span> likes
+            </button>
+            <button class="btn btn-link comment-button">
+                <i class="bi bi-chat"></i>
+                <span class="comments-count">{{ post.comments.count }}</span> comments
+            </button>
+        </div>
+        
+        <div class="comments-section mt-3" style="display: none;">
+            <div class="comments-list">
+                {% for comment in post.comments.all %}
+                    {% include 'posts/comment.html' with comment=comment %}
+                {% endfor %}
+            </div>
+            <form class="comment-form mt-2">
+                {% csrf_token %}
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Add a comment...">
+                    <button class="btn btn-primary" type="submit">Post</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle likes
+    const likeButtons = document.querySelectorAll('.like-button');
+    likeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const postCard = this.closest('.post-card');
+            const postId = postCard.dataset.postId.trim(); // Trim any whitespace
+            const csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
+            
+            fetch(`/posts/like/${postId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const likesCount = this.querySelector('.likes-count');
+                likesCount.textContent = data.likes_count;
+                
+                if (data.liked) {
+                    this.classList.add('liked');
+                    this.querySelector('i').classList.remove('bi-heart');
+                    this.querySelector('i').classList.add('bi-heart-fill');
+                } else {
+                    this.classList.remove('liked');
+                    this.querySelector('i').classList.remove('bi-heart-fill');
+                    this.querySelector('i').classList.add('bi-heart');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    });
+
+    // Your existing code for comments and polls
+});
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle likes
+        const likeButtons = document.querySelectorAll('.like-button');
+        likeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const postCard = this.closest('.post-card');
+                const postId = postCard.dataset.postId.trim(); // Trim any whitespace
+                const csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
+                
+                fetch(`/posts/like/${postId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrfToken,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const likesCount = this.querySelector('.likes-count');
+                    likesCount.textContent = data.likes_count;
+                    
+                    if (data.liked) {
+                        this.classList.add('liked');
+                        this.querySelector('i').classList.remove('bi-heart');
+                        this.querySelector('i').classList.add('bi-heart-fill');
+                    } else {
+                        this.classList.remove('liked');
+                        this.querySelector('i').classList.remove('bi-heart-fill');
+                        this.querySelector('i').classList.add('bi-heart');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+    
+        // Your existing code for comments and polls
+    });
+</script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize poll timers
+            const pollTimers = document.querySelectorAll('.poll-timer');
+            pollTimers.forEach(timer => {
+                updatePollTimer(timer);
+                setInterval(() => updatePollTimer(timer), 1000);
+            });
+        
+            // Handle poll votes
+            const voteButtons = document.querySelectorAll('.vote-button');
+            voteButtons.forEach(button => {
+                button.addEventListener('click', handleVote);
+            });
+        });
+        
+        function updatePollTimer(timerElement) {
+            const endsAt = new Date(timerElement.dataset.endsAt);
+            const now = new Date();
+            const timeLeft = endsAt - now;
+        
+            if (timeLeft <= 0) {
+                timerElement.textContent = 'Poll ended';
+                // Disable all vote buttons in this poll
+                const pollOptions = timerElement.closest('.poll-options');
+                pollOptions.querySelectorAll('.vote-button').forEach(button => {
+                    button.disabled = true;
+                });
+                return;
+            }
+        
+            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+        
+            timerElement.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+        }
+        
+        function handleVote(event) {
+            const button = event.currentTarget;
+            const pollOption = button.closest('.poll-option');
+            const optionId = pollOption.dataset.optionId;
+            const pollOptions = button.closest('.poll-options');
+            const postId = pollOptions.dataset.postId;
+        
+            // Disable the button immediately to prevent double votes
+            button.disabled = true;
+        
+            // Get the CSRF token
+            const csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
+        
+            // Send vote request
+            fetch(`/polls/vote/${optionId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({
+                    post_id: postId,
+                    option_id: optionId
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                    button.disabled = false;  // Re-enable the button if there's an error
+                    return;
+                }
+        
+                // Update all options in this poll with new results
+                Object.entries(data.results).forEach(([optionId, result]) => {
+                    const option = pollOptions.querySelector(`.poll-option[data-option-id="${optionId}"]`);
+                    const progressBar = option.querySelector('.progress-bar');
+                    const voteCount = option.querySelector('.vote-count');
+                    const optionButton = option.querySelector('.vote-button');
+        
+                    progressBar.style.width = `${result.percentage}%`;
+                    progressBar.setAttribute('aria-valuenow', result.percentage);
+                    voteCount.textContent = `(${result.votes})`;
+                    
+                    // Disable all buttons after successful vote
+                    optionButton.disabled = true;
+                    if (optionId === pollOption.dataset.optionId) {
+                        optionButton.classList.add('active');
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while voting. Please try again.');
+                button.disabled = false;  // Re-enable the button if there's an error
+            });
+        }
+        </script>
+</div>

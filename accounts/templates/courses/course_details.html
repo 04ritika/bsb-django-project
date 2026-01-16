@@ -1,0 +1,258 @@
+{% extends 'courses/base.html' %}
+
+{% block content %}
+<style>
+    /* Base Styles */
+    :root {
+        --primary-color: #3a86ff;
+        --secondary-color: #8338ec;
+        --text-primary: #2b2d42;
+        --text-secondary: #5a5d72;
+        --bg-light: #f8f9fa;
+        --bg-white: #ffffff;
+    }
+    
+    /* Main Content Container */
+    .course-container {
+        max-width: 800px;
+        margin: 3rem auto 5rem;
+        padding: 0 1.5rem;
+        perspective: 1000px;
+    }
+    
+    /* Course Card */
+    .course-card {
+        background: var(--bg-white);
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        transition: transform 0.5s ease, box-shadow 0.5s ease;
+        transform: translateY(0);
+        position: relative;
+        z-index: 1;
+    }
+    
+    .course-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+    }
+    
+    /* Course Header */
+    .course-header {
+        position: relative;
+        padding: 2.5rem 2.5rem 1.5rem;
+        overflow: hidden;
+    }
+    
+    .course-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 8px;
+        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    }
+    
+    .course-image {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+    }
+    
+    .course-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin: 0 0 0.8rem;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        line-height: 1.2;
+    }
+    
+    /* Course Content */
+    .course-content {
+        padding: 0 2.5rem 2rem;
+        font-size: 1.05rem;
+        color: var(--text-secondary);
+        line-height: 1.8;
+    }
+    
+    .divider {
+        height: 1px;
+        background: linear-gradient(to right, rgba(0,0,0,0.03), rgba(0,0,0,0.1), rgba(0,0,0,0.03));
+        margin: 2rem 0;
+        border: none;
+    }
+    
+    /* Course Modules Section */
+    .modules-section {
+        padding: 0 2.5rem 2.5rem;
+    }
+    
+    .modules-header {
+        font-size: 1.4rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        color: var(--text-primary);
+    }
+    
+    .modules-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .module-item {
+        margin-bottom: 1.5rem;
+        padding: 1.5rem;
+        border-radius: 12px;
+        background: var(--bg-light);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        animation: fadeIn 0.5s ease-out forwards;
+        opacity: 0;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .module-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .module-item:nth-child(1) { animation-delay: 0.1s; }
+    .module-item:nth-child(2) { animation-delay: 0.2s; }
+    .module-item:nth-child(3) { animation-delay: 0.3s; }
+    
+    .module-title {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.8rem;
+        font-size: 1.2rem;
+    }
+    
+    .module-content {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+    
+    .module-image {
+        width: 100%;
+        border-radius: 8px;
+        margin-top: 1rem;
+    }
+    
+    .pdf-download {
+        display: flex;
+        align-items: center;
+        padding: 0.8rem 1.2rem;
+        background: linear-gradient(to right, rgba(58, 134, 255, 0.1), rgba(131, 56, 236, 0.1));
+        border-radius: 8px;
+        margin-top: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .pdf-download:hover {
+        background: linear-gradient(to right, rgba(58, 134, 255, 0.2), rgba(131, 56, 236, 0.2));
+    }
+    
+    .pdf-icon {
+        color: var(--primary-color);
+        margin-right: 10px;
+    }
+    
+    .pdf-link {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .pdf-link:hover {
+        color: var(--secondary-color);
+    }
+    
+    .no-content {
+        color: var(--text-secondary);
+        font-style: italic;
+        padding: 1rem;
+        background: rgba(0,0,0,0.02);
+        border-radius: 8px;
+        text-align: center;
+    }
+    
+    /* Animations */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+        .course-header, .course-content, .modules-section {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+        
+        .course-title {
+            font-size: 1.8rem;
+        }
+        
+        .module-item {
+            padding: 1.2rem;
+        }
+    }
+</style>
+
+<div class="course-container">
+    <div class="course-card">
+        <div class="course-header">
+            {% if course.header_image %}
+                <img src="{{ course.header_image.url }}" alt="{{ course.title }}" class="course-image">
+            {% endif %}
+            
+            <h1 class="course-title">{{ course.title }}</h1>
+        </div>
+        
+        <div class="course-content">
+            {{ course.description|linebreaks }}
+        </div>
+        
+        <hr class="divider">
+        
+        <div class="modules-section">
+            <h2 class="modules-header">Course Content</h2>
+            
+            <div class="modules-list">
+                {% for content in course.contents.all %}
+                    <div class="module-item">
+                        <h3 class="module-title">{{ content.title }}</h3>
+                        
+                        {% if content.content_type == 'TEXT' %}
+                            <div class="module-content">
+                                {{ content.text_content|linebreaks }}
+                            </div>
+                        {% elif content.content_type == 'PDF' %}
+                            <div class="pdf-download">
+                                <svg class="pdf-icon w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                <a href="{{ content.file.url }}" class="pdf-link" target="_blank">
+                                    Download PDF
+                                </a>
+                            </div>
+                        {% elif content.content_type == 'IMAGE' %}
+                            <img src="{{ content.file.url }}" alt="{{ content.title }}" class="module-image">
+                        {% endif %}
+                    </div>
+                {% empty %}
+                    <p class="no-content">No content available for this course yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
